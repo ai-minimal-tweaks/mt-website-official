@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+/* Design tokens — shared by every page of the revamp */
+@theme {
+  --color-ink: #0b0b0b;
+  --color-ink-soft: #1c1c1c;
+  --color-paper: #ffffff;
+  --color-mist: #f3f3f2;
+  --color-mist-2: #ebebea;
+  --color-line: #e3e3e1;
+  --color-muted: #9a9a98;
+  --color-subtle: #5e5e5c;
+  --color-ember: #f29a2e;
+  --color-flame: #ff6a1a;
+  --color-blaze: #c2410c;
+  --color-peach: #fff1e3;
+  --color-navy: #1b1f3b;
+
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+
+  --text-display: clamp(2.6rem, 1.2rem + 5.6vw, 5.75rem);
+  --text-display--line-height: 1.02;
+  --text-heading: clamp(1.9rem, 1.2rem + 2.4vw, 3.25rem);
+  --text-heading--line-height: 1.08;
+
+  --radius-card: 1.25rem;
+  --radius-shell: 1.75rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-ember);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-flame);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  .container-site {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+  }
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+  .accent {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  /* Each heading line sits in a mask so it can slide up on reveal */
+  .line-mask {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .line-mask > span {
+    display: block;
+  }
+  .dot-grid {
+    background-image: radial-gradient(currentColor 1px, transparent 1.4px);
+    background-size: 9px 9px;
+  }
+}
+
+/* Hero intro: hidden until GSAP plays it; a CSS fallback reveals it if JS never runs the timeline */
+html.motion [data-hero-in] {
+  opacity: 0;
+  animation: hero-fallback 0.6s ease 2.8s forwards;
+}
+@keyframes hero-fallback {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes handle-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+}
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(18px, -10px);
+  }
+  66% {
+    transform: translate(-10px, 8px);
+  }
+}
+@keyframes orbit {
+  from {
+    transform: rotateX(68deg) rotateZ(0deg);
+  }
+  to {
+    transform: rotateX(68deg) rotateZ(360deg);
+  }
+}
+@keyframes counter-orbit {
+  from {
+    transform: rotateZ(0deg) rotateX(-68deg);
+  }
+  to {
+    transform: rotateZ(-360deg) rotateX(-68deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
