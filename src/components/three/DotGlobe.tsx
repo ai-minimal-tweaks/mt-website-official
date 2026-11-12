@@ -121,7 +121,9 @@ export function DotGlobe({ className = "" }: { className?: string }) {
     });
 
     const resize = () => {
-      const { width, height } = host.getBoundingClientRect();
+      // Layout size, not getBoundingClientRect(): GSAP scales these hosts, and a transformed size is wrong (0 at scale 0).
+      const width = host.clientWidth;
+      const height = host.clientHeight;
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();

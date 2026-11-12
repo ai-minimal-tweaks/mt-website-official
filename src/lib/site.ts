@@ -1,7 +1,7 @@
-// Global navigation, footer and contact data. URLs follow docs/architecture/sitemap-and-architecture.md —
-// every link points at an existing minimaltweaks.com path.
+// Global navigation, footer and contact data. URLs follow docs/architecture/sitemap-and-architecture.md.
+// /contact replaces the old /talk page (301 in next.config.ts); /testimonials is new.
 
-export type NavLink = { label: string; href: string; external?: boolean };
+export type NavLink = { label: string; href: string; external?: boolean; match?: string[] };
 
 export const site = {
   name: "Minimal Tweaks",
@@ -15,24 +15,28 @@ export const site = {
   gtmId: "GTM-5R542TZ",
 };
 
+// `match` lists other path prefixes that light up the item (case studies live under Work).
 export const primaryNav: NavLink[] = [
-  { label: "Work", href: "/work" },
-  { label: "Services", href: "/services" },
+  { label: "Work", href: "/work", match: ["/case-studies"] },
+  { label: "Services", href: "/services", match: ["/webflow-development-agency"] },
   { label: "About", href: "/tweakers" },
-  { label: "Insights", href: "/blogs" },
-  { label: "Contact", href: "/talk" },
+  { label: "Testimonials", href: "/testimonials" },
+  { label: "Insights", href: "/blogs", match: ["/blog"] },
+  { label: "Contact", href: "/contact" },
 ];
 
-export const ctaLink: NavLink = { label: "Start a project", href: "/talk" };
+export const isActive = (item: NavLink, pathname: string) =>
+  [item.href, ...(item.match ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`));
+
+export const ctaLink: NavLink = { label: "Start a project", href: "/contact" };
 
 export const footerColumns: { title: string; links: NavLink[] }[] = [
   {
     title: "Services",
     links: [
-      { label: "Social Media Marketing", href: "/services#social-media-marketing" },
-      { label: "Branding & Identity", href: "/services#branding" },
-      { label: "Webflow Development", href: "/webflow-development-agency" },
-      { label: "UI/UX Designing", href: "/services#ui-ux" },
+      { label: "Social Media Marketing", href: "/work?category=Social" },
+      { label: "Branding & Identity", href: "/services#creative-thinking" },
+      { label: "Brand Content", href: "/services#brand-content" },
     ],
   },
   {
@@ -52,7 +56,7 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
       { label: "Tweakers", href: "/tweakers" },
       { label: "Become a Tweaker!", href: "/become-a-tweaker" },
       { label: "Work", href: "/work" },
-      { label: "Contact Us", href: "/talk" },
+      { label: "Contact Us", href: "/contact" },
     ],
   },
 ];

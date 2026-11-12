@@ -109,7 +109,9 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0] }: 
     const camera = new THREE.Camera();
 
     const resize = () => {
-      const { width, height } = host.getBoundingClientRect();
+      // Layout size, not getBoundingClientRect(): GSAP scales these hosts, and a transformed size is wrong (0 at scale 0).
+      const width = host.clientWidth;
+      const height = host.clientHeight;
       renderer.setSize(width, height, false);
       uniforms.uRes.value.set(width, height);
     };

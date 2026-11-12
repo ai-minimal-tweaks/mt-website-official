@@ -126,6 +126,24 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
           );
         });
 
+        // Figma-style selection box drawn around a word, then its corner handles pop in.
+        q("[data-anim='select']").forEach((el) => {
+          gsap
+            .timeline({ scrollTrigger: trigger(el, "top 92%"), delay: 0.35 })
+            .from(el.querySelector("[data-select-box]"), { scaleX: 0, transformOrigin: "left center", duration: 0.8, ease: "power3.inOut" })
+            .from(el.querySelectorAll("[data-select-handle]"), { scale: 0, duration: 0.45, stagger: 0.05, ease: "back.out(3)" }, "-=0.3");
+        });
+
+        // Dark page-hero shells recede as you scroll past them.
+        q("[data-anim='shell']").forEach((el) => {
+          gsap.to(el, {
+            scale: desktop ? 0.94 : 0.97,
+            borderRadius: desktop ? 44 : 30,
+            ease: "none",
+            scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: true },
+          });
+        });
+
         // Phones only: wide photos in taller frames pan sideways as they scroll through the viewport.
         if (!desktop) {
           q("[data-anim-pan] img").forEach((img) => {

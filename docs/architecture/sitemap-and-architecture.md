@@ -5,6 +5,12 @@
 
 The revamp **keeps this sitemap and every existing URL**. The page tree, URL slugs and section groupings below are the contract for the new build. Anything marked **⚠ Decision** needs a call from the team before build; it does not change the sitemap unless approved.
 
+> **Changes agreed during the build** (sections 1–4 still describe the live site as audited):
+> - `/talk` → **`/contact`** (permanent redirect in `next.config.ts`). Nav, footer and every CTA point at `/contact`; the form posts to `/api/contact` and shows an inline success state, so `/thank-you` is no longer the form target.
+> - **`/testimonials`** is a new page, added to the header nav.
+> - `/case-studies` (no index on the live site) redirects to `/work`; all 27 `/case-studies/:slug` URLs are kept.
+> - Header nav: Work · Services · About · Testimonials · Insights · Contact.
+
 ---
 
 ## 1. Current site at a glance
@@ -183,7 +189,8 @@ Home ──► /services (×4 service cards) ──► /talk
 | `/tweakers` | About | Singleton + team / values + clients |
 | `/become-a-tweaker` | Careers index | Job Posts |
 | `/job-posts/[slug]` | Job post | Job Posts |
-| `/talk` | Contact | Singleton + contact form |
+| `/contact` (was `/talk`, 301) | Contact | Singleton + contact form → `/api/contact` |
+| `/testimonials` | Testimonials (new) | Testimonials + case studies |
 | `/thank-you` | Utility (noindex) | Static |
 | `/blogs` | Blog index | Blog Posts (filter by category) |
 | `/blog/[slug]` | Blog post | Blog Posts |
@@ -233,9 +240,9 @@ SiteSettings  nav[], footer columns[], contact {phone[], email, address, whatsap
 
 | From | Must link to |
 |---|---|
-| Every page | Global nav (6 items) and footer (as in §3) · Contact CTA block → `/talk` form |
-| Case study | 3 related case studies (same category first) · the relevant service (`/services#…` or `/webflow-development-agency`) · `/talk` |
-| Blog post | 3 related posts · relevant service · `/talk` · breadcrumb `/blogs` |
+| Every page | Global nav (6 items) and footer · Contact CTA band → `/contact` |
+| Case study | 3 related case studies (same category first) · the relevant service (`/services#…` or `/webflow-development-agency`) · `/contact` |
+| Blog post | 3 related posts · relevant service · `/contact` · breadcrumb `/blogs` |
 | Job post | Other open roles · breadcrumb `/become-a-tweaker` |
 | `/services` service sections | Case studies filtered by that category (`/work?category=…`) |
 | `/webflow-development-agency` | Webflow-tagged case studies (CMS query, not hand-picked) · Webflow blog posts |

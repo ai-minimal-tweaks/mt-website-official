@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { faqs } from "@/content/home";
 import { Chevron, SectionHeading } from "@/components/ui";
 
-export function Faq() {
+export function Faq({ items = faqs }: { items?: typeof faqs }) {
   const [open, setOpen] = useState<number | null>(0);
   const base = useId();
 
@@ -16,7 +16,7 @@ export function Faq() {
         </div>
 
         <div data-anim="stagger" className="mt-12 space-y-3">
-          {faqs.map((f, i) => {
+          {items.map((f, i) => {
             const isOpen = open === i;
             return (
               <div
@@ -63,7 +63,7 @@ export function Faq() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+            mainEntity: items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
           }),
         }}
       />

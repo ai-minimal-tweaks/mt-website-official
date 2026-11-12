@@ -84,7 +84,7 @@ export function Hero() {
           </p>
 
           <div data-hero-in data-hero-fade className="mt-9">
-            <Pill href="/talk" variant="glass">
+            <Pill href="/contact" variant="glass">
               Let&apos;s start tweaking
             </Pill>
           </div>

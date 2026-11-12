@@ -125,6 +125,11 @@ html.motion [data-hero-in] {
     transform: scale(1.35);
   }
 }
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
 @keyframes scroll-cue {
   0% {
     transform: translateY(-100%);

@@ -63,7 +63,7 @@ export function Ideas() {
               </span>
             </h2>
             <div data-anim="fade-up" className="mt-7">
-              <Pill href="/talk" variant="light" size="sm">
+              <Pill href="/contact" variant="light" size="sm">
                 Start a project
               </Pill>
             </div>
