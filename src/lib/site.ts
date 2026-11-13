@@ -1,5 +1,6 @@
 // Global navigation, footer and contact data. URLs follow docs/architecture/sitemap-and-architecture.md.
-// /contact replaces the old /talk page (301 in next.config.ts); /testimonials is new.
+// /contact replaces the old /talk page and /about replaces /tweakers (308s in next.config.ts); /testimonials is new.
+// The blog (Insights) is not part of the revamp, so it is not linked anywhere.
 
 export type NavLink = { label: string; href: string; external?: boolean; match?: string[] };
 
@@ -19,9 +20,8 @@ export const site = {
 export const primaryNav: NavLink[] = [
   { label: "Work", href: "/work", match: ["/case-studies"] },
   { label: "Services", href: "/services", match: ["/webflow-development-agency"] },
-  { label: "About", href: "/tweakers" },
+  { label: "About", href: "/about", match: ["/tweakers"] },
   { label: "Testimonials", href: "/testimonials" },
-  { label: "Insights", href: "/blogs", match: ["/blog"] },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -43,7 +43,6 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
     title: "Help & Advice",
     links: [
       { label: "How We Tweak?", href: site.showreel, external: true },
-      { label: "Blogs", href: "/blogs" },
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms and Conditions", href: "/terms-and-conditions" },
       { label: "Refund & Cancellations", href: "/refund-and-cancellations" },
@@ -53,7 +52,7 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
     title: "Company",
     links: [
       { label: "Expertise", href: "/services" },
-      { label: "Tweakers", href: "/tweakers" },
+      { label: "About Us", href: "/about" },
       { label: "Become a Tweaker!", href: "/become-a-tweaker" },
       { label: "Work", href: "/work" },
       { label: "Contact Us", href: "/contact" },

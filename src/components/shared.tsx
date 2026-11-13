@@ -17,6 +17,38 @@ export function SelectWord({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Floating liquid-glass lenses for the dark shells. They refract the light field behind them, bob on a
+ * slow loop and drift at different parallax speeds, so scrolling reads as a camera moving through depth.
+ */
+export function GlassOrbs({ variant = "page" }: { variant?: "page" | "hero" }) {
+  const orbs =
+    variant === "hero"
+      ? [
+          { pos: "left-[6%] top-[22%] size-28 sm:size-40 rounded-full", speed: -40, dur: "11s" },
+          { pos: "right-[7%] top-[16%] h-20 w-40 sm:h-28 sm:w-56 rounded-full", speed: 30, dur: "13s" },
+          { pos: "bottom-[14%] right-[18%] size-16 sm:size-24 rounded-[1.75rem]", speed: -70, dur: "9s", lens: true },
+          { pos: "bottom-[18%] left-[16%] hidden sm:block h-14 w-28 rounded-full", speed: 55, dur: "12s" },
+        ]
+      : [
+          { pos: "-left-6 top-[30%] size-24 sm:size-36 rounded-full", speed: -45, dur: "11s" },
+          { pos: "right-[6%] top-[22%] hidden sm:block h-24 w-44 rounded-full", speed: 35, dur: "13s" },
+          { pos: "bottom-[10%] right-[14%] size-14 sm:size-20 rounded-[1.4rem]", speed: -70, dur: "9s", lens: true },
+        ];
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-[1]">
+      {orbs.map((o, i) => (
+        <div key={i} data-anim="parallax" data-speed={o.speed} className={`absolute ${o.pos.split(" ").filter((c) => !c.startsWith("rounded")).join(" ")}`}>
+          <div
+            className={`liquid-glass relative size-full ${"lens" in o ? "lg-lens" : ""} ${o.pos.split(" ").find((c) => c.startsWith("rounded")) ?? ""} motion-safe:animate-[glass-float_ease-in-out_infinite]`}
+            style={{ animationDuration: o.dur, animationDelay: `${i * -2.3}s` }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** Dark rounded hero shell with the liquid-light shader — shared by every inner page. */
 export function PageHero({
   children,
@@ -36,6 +68,7 @@ export function PageHero({
         className={`relative isolate overflow-hidden rounded-[1.5rem] bg-ink text-white will-change-transform sm:rounded-shell ${className}`}
       >
         <GradientField bias={bias} />
+        <GlassOrbs />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,rgba(0,0,0,.35),transparent_70%)]" />
         <div className={`container-site relative z-10 pb-16 pt-32 sm:pb-20 sm:pt-40 ${align === "center" ? "text-center" : ""}`}>{children}</div>
       </div>
@@ -48,7 +81,7 @@ export function CtaBand({ lead, accent, body }: { lead: string; accent: string; 
   return (
     <section className="py-16 sm:py-24">
       <div className="container-site">
-        <div data-anim="fade-up" className="relative grid gap-8 overflow-hidden rounded-[1.5rem] bg-mist px-6 py-12 sm:px-12 sm:py-16 md:grid-cols-2 md:items-center">
+        <div data-anim="camera" className="relative grid gap-8 overflow-hidden rounded-[1.5rem] bg-mist px-6 py-12 sm:px-12 sm:py-16 md:grid-cols-2 md:items-center">
           <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-peach blur-[90px]" />
           <h2 data-anim="lines" className="relative text-heading font-medium tracking-[-0.04em]">
             <span className="line-mask">
@@ -92,7 +125,18 @@ export function Eyebrow({ index, label, tone = "dark" }: { index?: string; label
 }
 
 /** Case-study card for /work, services and case pages. Uses the live case-study cover image. */
-export function CaseCard({ study, size = "md", priority = false }: { study: CaseStudy; size?: "lg" | "md"; priority?: boolean }) {
+export function CaseCard({
+  study,
+  size = "md",
+  priority = false,
+  reveal = true,
+}: {
+  study: CaseStudy;
+  size?: "lg" | "md";
+  priority?: boolean;
+  /** Wipe the cover open on scroll. Off where the card's container runs its own reveal (e.g. /work's client grid). */
+  reveal?: boolean;
+}) {
   return (
     <Link
       href={`/case-studies/${study.slug}`}
@@ -100,16 +144,18 @@ export function CaseCard({ study, size = "md", priority = false }: { study: Case
       data-flip-id={study.slug}
       className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-mist p-2 transition-shadow duration-500 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,.35)]"
     >
-      <div className={`relative overflow-hidden rounded-[0.9rem] bg-ink ${size === "lg" ? "aspect-[16/11]" : "aspect-[4/3]"}`}>
+      <div data-anim={reveal ? "media" : undefined} className={`relative overflow-hidden rounded-[0.9rem] bg-ink ${size === "lg" ? "aspect-[16/11]" : "aspect-[4/3]"}`}>
         {study.cover && (
+          <div className="absolute inset-0 transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.05]">
           <Image
             src={study.cover}
             alt={`${study.client} — ${study.title}`}
             fill
             priority={priority}
             sizes={size === "lg" ? "(min-width: 1024px) 600px, 100vw" : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"}
-            className="object-cover transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.05]"
+            className="object-cover"
           />
+          </div>
         )}
         {study.concept && (
           <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-1 text-[0.62rem] font-semibold uppercase tracking-wider text-ink">

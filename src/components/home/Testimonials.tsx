@@ -49,7 +49,7 @@ export function Testimonials() {
 
       <div
         ref={track}
-        data-anim="fade-up"
+        data-anim="camera"
         className="mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[6vw] pb-6 [scrollbar-width:none] sm:gap-6 md:px-[calc((100vw-min(58rem,86vw))/2)]"
         onKeyDown={(e) => {
           if (e.key === "ArrowRight") go(active + 1);

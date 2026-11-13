@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
 import { Faq } from "@/components/home/Faq";
-import { CtaBand, PageHero, SelectWord } from "@/components/shared";
+import { CtaBand, GlassOrbs, PageHero, SelectWord } from "@/components/shared";
 import { Arrow, Pill, SectionHeading } from "@/components/ui";
 import { GradientField } from "@/components/three/GradientField";
 import { faqs } from "@/content/home";
@@ -51,7 +51,7 @@ export default function ServicesPage() {
           <div className="container-site">
             <div id="pillars-title" className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <SectionHeading lead="What we do." accent="In detail." />
-              <p data-anim="fade-up" className="max-w-xs font-serif text-[1.05rem] leading-snug text-subtle md:text-right">
+              <p data-anim="words" className="max-w-xs font-serif text-[1.05rem] leading-snug text-subtle md:text-right">
                 A creative agency first. We pick the tools, including AI, that suit each brief.
               </p>
             </div>
@@ -60,7 +60,7 @@ export default function ServicesPage() {
               {pillars.map((p, i) => {
                 const related = getCaseStudy(p.related);
                 return (
-                  <article key={p.id} id={p.id} data-anim="fade-up" className="relative scroll-mt-28 pt-6">
+                  <article key={p.id} id={p.id} data-anim="camera" className="relative scroll-mt-28 pt-6">
                     {/* Folder tab, as on the homepage idea cards */}
                     <div aria-hidden className="absolute left-0 top-0 h-7 w-56 max-w-[60%] rounded-t-[1rem] bg-mist [clip-path:polygon(0_0,86%_0,100%_100%,0_100%)]" />
                     <div className="grid gap-10 rounded-b-[1.4rem] rounded-tr-[1.4rem] bg-mist p-6 sm:p-10 md:grid-cols-[1fr_1.15fr]">
@@ -119,6 +119,17 @@ export default function ServicesPage() {
           </div>
         </section>
 
+        {/* The three pillars, sliding past as oversized type */}
+        <div aria-hidden className="overflow-hidden pb-14 sm:pb-20">
+          <p data-anim="drift" data-speed="-30" className="whitespace-nowrap text-[clamp(3.5rem,10vw,9rem)] font-semibold leading-none tracking-[-0.055em] text-ink/[0.07]">
+            {[...pillars, ...pillars].map((p, i) => (
+              <span key={i}>
+                {p.title.join(" ")} <em className="font-serif font-light text-ember/60">·</em>{" "}
+              </span>
+            ))}
+          </p>
+        </div>
+
         <section className="pb-16 sm:pb-24" aria-labelledby="process-title">
           <div className="container-site">
             <div id="process-title">
@@ -137,8 +148,9 @@ export default function ServicesPage() {
         </section>
 
         <section className="px-2 sm:px-3" aria-labelledby="ways-title">
-          <div className="relative isolate overflow-hidden rounded-[1.5rem] bg-ink py-16 text-white sm:rounded-shell sm:py-24">
+          <div data-anim="camera" className="relative isolate overflow-hidden rounded-[1.5rem] bg-ink py-16 text-white sm:rounded-shell sm:py-24">
             <GradientField bias={[0.05, 0.05]} />
+            <GlassOrbs />
             <div className="container-site relative">
               <h2 id="ways-title" data-anim="lines" className="text-heading font-medium tracking-[-0.04em]">
                 <span className="line-mask">
@@ -153,7 +165,7 @@ export default function ServicesPage() {
                   <article
                     key={e.name}
                     data-anim-item
-                    className={`rounded-[1.25rem] border p-6 backdrop-blur-md sm:p-7 ${e.highlight ? "border-ember/70 bg-white/[0.07]" : "border-white/10 bg-white/[0.04]"}`}
+                    className={`liquid-glass relative rounded-[1.25rem] p-6 sm:p-7 ${e.highlight ? "ring-1 ring-ember/70" : ""}`}
                   >
                     <p className="eyebrow text-[0.6rem] text-white/50">{e.bestFor}</p>
                     <h3 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">{e.name}</h3>

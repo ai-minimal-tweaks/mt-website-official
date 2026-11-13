@@ -59,9 +59,9 @@ export default function TestimonialsPage() {
         </PageHero>
 
         <section className="container-site py-16 sm:py-24" aria-label="Featured testimonial">
-          <figure data-anim="fade-up" className="rounded-[1.5rem] bg-mist p-6 sm:p-12">
+          <figure data-anim="camera" className="rounded-[1.5rem] bg-mist p-6 sm:p-12">
             <span className="rounded-md bg-white px-2.5 py-1 text-xs font-semibold">★ 5.0</span>
-            <blockquote className="mt-8 max-w-3xl font-serif text-[clamp(1.4rem,1.1rem+1.1vw,2rem)] leading-[1.45] text-ink">
+            <blockquote data-anim="words" className="mt-8 max-w-3xl font-serif text-[clamp(1.4rem,1.1rem+1.1vw,2rem)] leading-[1.45] text-ink">
               “{featured.quote}”
             </blockquote>
             <figcaption className="mt-10 flex flex-col gap-6 border-t border-ink/10 pt-6 md:flex-row md:items-center md:justify-between">

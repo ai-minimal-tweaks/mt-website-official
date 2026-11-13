@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { GradientField } from "@/components/three/GradientField";
 import { Pill } from "@/components/ui";
+import { GlassOrbs } from "@/components/shared";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -29,12 +30,29 @@ export function Hero() {
           .from("[data-hero-line]", { yPercent: 115, rotate: desktop ? 2 : 0, duration: 1.3, stagger: 0.11 })
           .from("[data-hero-box]", { scaleX: 0, transformOrigin: "left center", duration: 0.9, ease: "power3.inOut" }, "-=0.7")
           .from("[data-hero-handle]", { scale: 0, duration: 0.5, stagger: 0.05, ease: "back.out(3)" }, "-=0.35")
-          .from("[data-hero-fade]", { y: 24, autoAlpha: 0, duration: 1, stagger: 0.12 }, "-=0.6");
+          .from("[data-hero-fade]", { y: 24, autoAlpha: 0, duration: 1, stagger: 0.12 }, "-=0.6")
+          .from("[data-hero-shell] [data-anim=parallax]", { scale: 0, autoAlpha: 0, duration: 1.6, stagger: 0.12, ease: "elastic.out(1, 0.6)" }, 0.5);
 
         // Scroll-out: the shell recedes and the copy lifts away.
         const st = { trigger: root.current, start: "top top", end: "bottom top", scrub: true };
-        gsap.to("[data-hero-shell]", { scale: desktop ? 0.92 : 0.96, borderRadius: desktop ? 48 : 32, ease: "none", scrollTrigger: st });
-        gsap.to("[data-hero-copy]", { yPercent: desktop ? -28 : -14, autoAlpha: 0.15, ease: "none", scrollTrigger: st });
+        // Scroll-out: the camera pulls back and tips the shell away; the copy lifts and blurs out of focus.
+        gsap.to("[data-hero-shell]", {
+          scale: desktop ? 0.88 : 0.95,
+          rotationX: desktop ? 10 : 5,
+          transformPerspective: 1800,
+          transformOrigin: "50% 100%",
+          borderRadius: desktop ? 52 : 32,
+          ease: "none",
+          scrollTrigger: st,
+        });
+        gsap.to("[data-hero-copy]", {
+          yPercent: desktop ? -30 : -14,
+          scale: desktop ? 0.92 : 0.97,
+          autoAlpha: 0.1,
+          ...(desktop && { filter: "blur(6px)" }),
+          ease: "none",
+          scrollTrigger: st,
+        });
       });
       return () => mm.revert();
     },
@@ -48,6 +66,7 @@ export function Hero() {
         className="relative isolate flex min-h-[calc(100svh-1rem)] items-center justify-center overflow-hidden rounded-[1.5rem] bg-ink text-white will-change-transform sm:min-h-[calc(100svh-1.5rem)] sm:rounded-shell"
       >
         <GradientField />
+        <GlassOrbs variant="hero" />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,rgba(0,0,0,.35),transparent_70%)]" />
 
         <div data-hero-copy className="relative z-10 flex flex-col items-center px-5 pb-16 pt-32 text-center sm:pt-36">

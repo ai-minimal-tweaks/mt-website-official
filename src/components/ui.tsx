@@ -13,8 +13,7 @@ type PillProps = {
 const variants = {
   dark: "bg-ink text-white shadow-[0_10px_30px_-12px_rgba(0,0,0,.55)] hover:bg-ink-soft",
   light: "bg-white text-ink shadow-[0_10px_30px_-14px_rgba(0,0,0,.35)] hover:bg-mist",
-  glass:
-    "border border-white/20 bg-white/10 text-white backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,.18)] hover:bg-white/20",
+  glass: "liquid-glass relative text-white hover:bg-white/15",
   outline: "border border-ink/80 text-ink hover:bg-ink hover:text-white",
   flame:
     "bg-[radial-gradient(120%_140%_at_80%_0%,#ff8a3d_0%,#c2410c_45%,#1a0b05_100%)] text-white shadow-[0_8px_24px_-10px_rgba(194,65,12,.8)] hover:brightness-110",
@@ -22,7 +21,8 @@ const variants = {
 
 /** Rounded pill CTA used across the site. Uppercase label + arrow, per the design. */
 export function Pill({ href, children, variant = "dark", size = "md", external, className = "" }: PillProps) {
-  const cls = `group inline-flex items-center justify-center gap-2 rounded-full font-sans font-semibold uppercase tracking-[0.06em] transition-all duration-300 ease-out-expo active:scale-[0.97] ${
+    // No `transition-all`: the magnetic pull animates transform from JS, and a CSS transform transition would fight it.
+  const cls = `group inline-flex items-center justify-center gap-2 rounded-full font-sans font-semibold uppercase tracking-[0.06em] transition-[background-color,color,border-color,box-shadow,filter,scale] duration-300 ease-out-expo active:scale-[0.97] ${
     size === "sm" ? "h-9 px-4 text-[0.66rem]" : "h-12 px-6 text-[0.72rem]"
   } ${variants[variant]} ${className}`;
   const inner = (
@@ -32,11 +32,11 @@ export function Pill({ href, children, variant = "dark", size = "md", external, 
     </>
   );
   return external ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cls} data-magnetic>
       {inner}
     </a>
   ) : (
-    <Link href={href} className={cls}>
+    <Link href={href} className={cls} data-magnetic>
       {inner}
     </Link>
   );

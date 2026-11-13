@@ -26,6 +26,7 @@ export function Header() {
   const headerRef = useRef<HTMLElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLSpanElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => setOpen(false), [pathname]);
@@ -36,6 +37,7 @@ export function Header() {
       mm.add({ motion: "(prefers-reduced-motion: no-preference)", desktop: "(min-width: 768px)" }, (ctx) => {
         const { motion, desktop } = ctx.conditions as { motion: boolean; desktop: boolean };
         const header = headerRef.current!;
+        gsap.fromTo(progressRef.current, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: motion ? 0.3 : true } });
         if (!motion) {
           // Depth still shows (statically) once scrolled; only the movement is dropped.
           ScrollTrigger.create({ start: 0, end: "max", onUpdate: (s) => header.style.setProperty("--depth", s.scroll() > 40 ? "1" : "0") });
@@ -142,12 +144,16 @@ export function Header() {
           <div className="relative" style={{ transform: "scale(calc(1 - var(--depth) * 0.025))" }}>
           <nav
             aria-label="Primary"
-            className="relative flex h-14 items-center justify-between rounded-full border border-white/60 bg-white/90 pl-3 pr-2 backdrop-blur-xl sm:h-16 sm:pl-4"
+            className="liquid-glass-light relative flex h-14 items-center justify-between rounded-full border border-white/60 pl-3 pr-2 sm:h-16 sm:pl-4"
             style={{
               boxShadow:
                 "0 1px 0 rgba(255,255,255,.9) inset, 0 calc(6px + var(--depth) * 16px) calc(24px + var(--depth) * 30px) calc(-14px - var(--depth) * 4px) rgba(0,0,0,calc(.28 + var(--depth) * .2))",
             }}
           >
+            {/* Reading progress: an ember hairline along the pill's lower edge */}
+            <span aria-hidden className="pointer-events-none absolute inset-x-7 bottom-0 h-[2px] overflow-hidden rounded-full">
+              <span ref={progressRef} className="block h-full origin-left bg-gradient-to-r from-ember via-flame to-blaze" style={{ transform: "scaleX(0)" }} />
+            </span>
             <Link href="/" aria-label={`${site.name} home`} className="flex h-11 shrink-0 items-center pr-3">
               <Logo />
             </Link>

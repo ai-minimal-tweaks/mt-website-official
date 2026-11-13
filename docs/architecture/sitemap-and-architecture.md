@@ -9,7 +9,8 @@ The revamp **keeps this sitemap and every existing URL**. The page tree, URL slu
 > - `/talk` → **`/contact`** (permanent redirect in `next.config.ts`). Nav, footer and every CTA point at `/contact`; the form posts to `/api/contact` and shows an inline success state, so `/thank-you` is no longer the form target.
 > - **`/testimonials`** is a new page, added to the header nav.
 > - `/case-studies` (no index on the live site) redirects to `/work`; all 27 `/case-studies/:slug` URLs are kept.
-> - Header nav: Work · Services · About · Testimonials · Insights · Contact.
+> - Header nav: Work · Services · About · Testimonials · Contact. Insights (the blog) was dropped from the revamp and is not linked from the header or footer.
+> - `/tweakers` → `/about` (308). The about page keeps the live page's story, mission, values and clients.
 
 ---
 

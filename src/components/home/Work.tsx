@@ -102,12 +102,13 @@ export function Work() {
           </aside>
 
           <div className="min-w-0">
-            <div ref={gridRef} className="grid gap-5 sm:grid-cols-2" aria-live="polite">
+            <div ref={gridRef} data-anim="stagger" className="grid gap-5 sm:grid-cols-2" aria-live="polite">
               {visible.map((p) => (
                 <Link
                   key={p.slug}
                   href={p.href}
                   data-card
+                  data-anim-item
                   data-flip-id={p.slug}
                   className="group block overflow-hidden rounded-card border border-line bg-mist p-2 transition-shadow duration-500 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,.35)]"
                 >

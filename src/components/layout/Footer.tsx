@@ -10,7 +10,7 @@ export function Footer({ cta = true }: { cta?: boolean }) {
       <GradientField bias={[-0.1, -0.15]} intensity={0.8} />
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink/60" />
 
-      <div className="container-site relative">
+      <div data-anim="footer" className="container-site relative">
         {cta && (
           <div className="grid gap-10 border-b border-white/10 pb-14 md:grid-cols-[1.1fr_1fr] md:items-end md:pb-20">
             <div>
@@ -91,7 +91,7 @@ export function Footer({ cta = true }: { cta?: boolean }) {
             <p className="mt-3 max-w-56 text-[0.95rem] leading-snug text-white/85">Feel free to get in touch with us via email</p>
             <a
               href={`mailto:${site.email}?subject=Tweak%20My%20Brand`}
-              className="mt-5 inline-flex h-12 items-center gap-2.5 rounded-full border border-white/25 bg-white/5 px-5 text-sm font-medium backdrop-blur transition hover:border-ember hover:text-ember"
+              className="liquid-glass relative mt-5 inline-flex h-12 items-center gap-2.5 rounded-full px-5 text-sm font-medium transition-colors hover:text-ember"
             >
               <svg viewBox="0 0 24 24" className="size-4" fill="currentColor" aria-hidden>
                 <path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm1 3.2V17h16V8.2l-8 5-8-5ZM19 7H5l7 4.4L19 7Z" />
@@ -99,6 +99,17 @@ export function Footer({ cta = true }: { cta?: boolean }) {
               {site.email}
             </a>
           </div>
+        </div>
+
+        {/* Oversized wordmark that slides and leans with the scroll */}
+        <div aria-hidden className="pointer-events-none -mx-[clamp(1.25rem,4vw,3.5rem)] overflow-hidden">
+          <p
+            data-anim="drift"
+            data-speed="-28"
+            className="whitespace-nowrap pl-[8vw] text-[clamp(4.5rem,15vw,13rem)] font-semibold leading-[0.9] tracking-[-0.06em] text-white/[0.07]"
+          >
+            Minimal <em className="font-serif font-light">Tweaks</em> · Minimal <em className="font-serif font-light">Tweaks</em>
+          </p>
         </div>
 
         <div className="flex flex-col items-center gap-5 border-t border-white/10 py-7 sm:flex-row sm:justify-between">

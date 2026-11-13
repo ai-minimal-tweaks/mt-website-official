@@ -43,12 +43,23 @@ export function WorkGrid() {
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.set("[data-reveal]", { autoAlpha: 0, y: 48 });
+      mm.add({ motion: "(prefers-reduced-motion: no-preference)", desktop: "(min-width: 768px)" }, (ctx) => {
+        const { motion, desktop } = ctx.conditions as { motion: boolean; desktop: boolean };
+        if (!motion) return;
+        // Cards swing up from depth in rows; each cover wipes open and dollies back from a close-up.
+        gsap.set("[data-reveal]", { autoAlpha: 0, y: desktop ? 110 : 50, rotationX: desktop ? -22 : -10, transformPerspective: 1200, transformOrigin: "50% 0%" });
+        gsap.set("[data-reveal] [data-card] > div:first-child", { clipPath: "inset(100% 0% 0% 0%)" });
+        gsap.set("[data-reveal] [data-card] img", { scale: 1.4 });
         ScrollTrigger.batch("[data-reveal]", {
-          start: "top 88%",
+          start: "top 90%",
           once: true,
-          onEnter: (els) => gsap.to(els, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.08, ease: "expo.out" }),
+          onEnter: (els) => {
+            gsap.to(els, { autoAlpha: 1, y: 0, rotationX: 0, duration: 1.3, stagger: 0.1, ease: "expo.out", clearProps: "transform" });
+            els.forEach((el, i) => {
+              gsap.to(el.querySelector("[data-card] > div:first-child"), { clipPath: "inset(0% 0% 0% 0%)", duration: 1.4, delay: i * 0.1, ease: "expo.inOut" });
+              gsap.to(el.querySelector("[data-card] img"), { scale: 1, duration: 2, delay: i * 0.1, ease: "expo.out" });
+            });
+          },
         });
       });
       return () => mm.revert();
@@ -100,7 +111,9 @@ export function WorkGrid() {
           </p>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((s) => (
-              <CaseCard key={s.slug} study={s} />
+              <div key={s.slug} data-reveal>
+                <CaseCard study={s} reveal={false} />
+              </div>
             ))}
           </div>
         </>
@@ -108,17 +121,23 @@ export function WorkGrid() {
         <>
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             {featured.slice(0, 2).map((s, i) => (
-              <CaseCard key={s.slug} study={s} size="lg" priority={i === 0} />
+              <div key={s.slug} data-reveal>
+                <CaseCard study={s} size="lg" priority={i === 0} reveal={false} />
+              </div>
             ))}
           </div>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featured.slice(2, 5).map((s) => (
-              <CaseCard key={s.slug} study={s} />
+              <div key={s.slug} data-reveal>
+                <CaseCard study={s} reveal={false} />
+              </div>
             ))}
           </div>
           <div className="mt-5 grid gap-5 lg:grid-cols-3">
             {featured.slice(5).map((s) => (
-              <CaseCard key={s.slug} study={s} />
+              <div key={s.slug} data-reveal>
+                <CaseCard study={s} reveal={false} />
+              </div>
             ))}
             <div className="grid min-h-[18rem] place-items-center rounded-card border border-dashed border-ink/20 bg-white px-6 py-12 text-center lg:col-span-2">
               <div>
@@ -149,7 +168,7 @@ export function WorkGrid() {
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {archive.map((s) => (
               <div key={s.slug} data-reveal>
-                <CaseCard study={s} />
+                <CaseCard study={s} reveal={false} />
               </div>
             ))}
           </div>

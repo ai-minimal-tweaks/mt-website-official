@@ -49,6 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
       </head>
       <body>
+        {/* Refraction map for .liquid-glass (Chromium backdrop-filter). Low-frequency noise bends what's behind
+            the glass like a lens; the edges move most because the map is strongest where noise gradients are. */}
+        <svg aria-hidden width="0" height="0" className="pointer-events-none absolute">
+          <filter id="lg-refract" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="11" result="noise" />
+            <feGaussianBlur in="noise" stdDeviation="3" result="map" />
+            <feDisplacementMap in="SourceGraphic" in2="map" scale="46" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </svg>
         <MotionProvider>
           <Header />
           {children}

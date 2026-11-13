@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
     return [
       // The contact page moved from /talk to /contact in the revamp.
       { source: "/talk", destination: "/contact", permanent: true },
+      // The about page moved from /tweakers to /about in the revamp.
+      { source: "/tweakers", destination: "/about", permanent: true },
       // The live site never had a case-study index; /work is the listing.
       { source: "/case-studies", destination: "/work", permanent: true },
     ];

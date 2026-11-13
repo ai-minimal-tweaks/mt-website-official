@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { RichBlocks } from "@/components/case/RichBlocks";
-import { CtaBand, PageHero } from "@/components/shared";
+import { CtaBand, GlassOrbs, PageHero } from "@/components/shared";
 import { Arrow } from "@/components/ui";
 import { GradientField } from "@/components/three/GradientField";
 import { caseStudies, getCaseStudy, imagesOf, nextCaseStudy } from "@/content/case-studies";
@@ -141,8 +141,9 @@ export default async function CaseStudyPage({ params }: Props) {
         </section>
 
         <section className="px-2 sm:px-3" aria-labelledby="process-title">
-          <div className="relative isolate overflow-hidden rounded-[1.5rem] bg-ink py-16 text-white sm:rounded-shell sm:py-24">
+          <div data-anim="camera" className="relative isolate overflow-hidden rounded-[1.5rem] bg-ink py-16 text-white sm:rounded-shell sm:py-24">
             <GradientField bias={[0.15, 0.1]} intensity={0.9} />
+            <GlassOrbs />
             <div className="container-site relative">
               <div id="process-title" className="grid gap-6 md:grid-cols-2 md:items-end">
                 <SectionTitle index="03" label="Process" lead="Process." accent="How the tweak happened." tone="light" />
@@ -199,9 +200,9 @@ export default async function CaseStudyPage({ params }: Props) {
 
         {quote && (
           <section className="container-site pb-16 sm:pb-24" aria-label="Client testimonial">
-            <figure data-anim="fade-up" className="rounded-[1.5rem] bg-mist p-6 sm:p-12">
+            <figure data-anim="camera" className="rounded-[1.5rem] bg-mist p-6 sm:p-12">
               <p className="eyebrow text-ink/50">In their words</p>
-              <blockquote className="accent mt-5 max-w-4xl text-[clamp(1.5rem,1.1rem+1.4vw,2.3rem)] leading-[1.2] text-ink">“{quote.quote}”</blockquote>
+              <blockquote data-anim="words" className="accent mt-5 max-w-4xl text-[clamp(1.5rem,1.1rem+1.4vw,2.3rem)] leading-[1.2] text-ink">“{quote.quote}”</blockquote>
               <figcaption className="mt-8 flex items-center gap-3">
                 <span className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-[#d9a27a] to-[#6b3d22] text-sm font-semibold text-white">
                   {quote.name.split(" ").map((n) => n[0]).join("")}

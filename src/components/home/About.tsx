@@ -25,7 +25,7 @@ export function About() {
             </span>
           </h2>
           <div data-anim="fade-up" className="shrink-0">
-            <Pill href="/tweakers">Explore our story</Pill>
+            <Pill href="/about">Explore our story</Pill>
           </div>
         </div>
 
@@ -53,12 +53,12 @@ export function About() {
           </div>
         </figure>
 
-        <div data-anim="stagger" className="mt-10 max-w-3xl space-y-5 font-serif text-[1.08rem] leading-relaxed text-subtle sm:text-xl">
-          <p data-anim-item>
+        <div className="mt-10 max-w-3xl space-y-5 font-serif text-[1.08rem] leading-relaxed text-subtle sm:text-xl">
+          <p data-anim="words">
             We work with <strong className="font-semibold italic text-ink">top 1% consumer brands</strong> that have a lot to create.
             From products, constant campaigns, multiple platforms and markets, and an ever-growing need for good creative.
           </p>
-          <p data-anim-item>
+          <p data-anim="words">
             Getting ahead doesn&apos;t always require a reinvention. Sometimes, the right creative thought, a sharper idea, a
             different perspective, a smarter execution is enough to change the outcome.
           </p>
