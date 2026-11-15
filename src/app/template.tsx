@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { LogoMark } from "@/components/ui";
 
 // Last path that played (or skipped) the transition. Module scope survives re-mounts, so the first load
 // and React's dev double-mount don't play it — only a real move to a different route does.
@@ -26,7 +27,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
       isNavigation.current = lastPath !== null && lastPath !== pathname;
       lastPath = pathname;
     }
-    if (!isNavigation.current || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!isNavigation.current || pathname.startsWith("/admin") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const tl = gsap
       .timeline({ defaults: { ease: "expo.inOut" } })
@@ -55,11 +56,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
         className="pointer-events-none invisible fixed inset-0 z-[70] grid place-items-center overflow-hidden rounded-b-[2.5rem] bg-ink"
       >
         <div aria-hidden className="absolute -bottom-40 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-flame/40 blur-[120px]" />
-        <span
-          data-curtain-mark
-          className="relative flex size-16 items-center justify-center whitespace-nowrap rounded-xl bg-navy text-lg font-bold text-white"
-        >
-          M<span className="text-ember">T</span>
+        <span data-curtain-mark className="relative block">
+          <LogoMark className="size-16" />
         </span>
       </div>
       <div ref={page}>{children}</div>

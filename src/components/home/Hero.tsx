@@ -6,7 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { GradientField } from "@/components/three/GradientField";
 import { Pill } from "@/components/ui";
-import { GlassOrbs } from "@/components/shared";
+import { HeroScene } from "@/components/three/HeroScene";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -30,8 +30,7 @@ export function Hero() {
           .from("[data-hero-line]", { yPercent: 115, rotate: desktop ? 2 : 0, duration: 1.3, stagger: 0.11 })
           .from("[data-hero-box]", { scaleX: 0, transformOrigin: "left center", duration: 0.9, ease: "power3.inOut" }, "-=0.7")
           .from("[data-hero-handle]", { scale: 0, duration: 0.5, stagger: 0.05, ease: "back.out(3)" }, "-=0.35")
-          .from("[data-hero-fade]", { y: 24, autoAlpha: 0, duration: 1, stagger: 0.12 }, "-=0.6")
-          .from("[data-hero-shell] [data-anim=parallax]", { scale: 0, autoAlpha: 0, duration: 1.6, stagger: 0.12, ease: "elastic.out(1, 0.6)" }, 0.5);
+          .from("[data-hero-fade]", { y: 24, autoAlpha: 0, duration: 1, stagger: 0.12 }, "-=0.6");
 
         // Scroll-out: the shell recedes and the copy lifts away.
         const st = { trigger: root.current, start: "top top", end: "bottom top", scrub: true };
@@ -66,7 +65,7 @@ export function Hero() {
         className="relative isolate flex min-h-[calc(100svh-1rem)] items-center justify-center overflow-hidden rounded-[1.5rem] bg-ink text-white will-change-transform sm:min-h-[calc(100svh-1.5rem)] sm:rounded-shell"
       >
         <GradientField />
-        <GlassOrbs variant="hero" />
+        <HeroScene variant="hero" />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,rgba(0,0,0,.35),transparent_70%)]" />
 
         <div data-hero-copy className="relative z-10 flex flex-col items-center px-5 pb-16 pt-32 text-center sm:pt-36">

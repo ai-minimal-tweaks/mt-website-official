@@ -7,7 +7,7 @@ export const pillars = [
     tagline: "Turning briefs into ideas worth making.",
     included: ["Creative Concepts", "Content Ideas", "Creative Directions", "Campaign Ideas"],
     deliverables: ["Campaign concepts and creative routes", "Content pillars and formats", "Creative direction decks", "Launch and moment ideas"],
-    related: "building-a-brand-identity-for-a-finance-organization",
+    related: "finsense",
   },
   {
     id: "creative-scale",
@@ -15,7 +15,7 @@ export const pillars = [
     tagline: "Creative without the format limits.",
     included: ["Static / Video", "Product Content", "AI / CGI", "Performance Content"],
     deliverables: ["Static and video assets in every format", "Product shoots and renders", "Ad variations for testing", "Monthly content production"],
-    related: "webflow-website-for-a-fmcg-brand",
+    related: "crunchy-cashews",
   },
   {
     id: "brand-content",
@@ -23,7 +23,7 @@ export const pillars = [
     tagline: "Making brands part of the conversation.",
     included: ["Social-first", "Topical Moments", "Storytelling", "Content IPs"],
     deliverables: ["Social calendars and always-on content", "Topical and moment marketing", "Brand stories and series", "Owned content IPs"],
-    related: "social-media-marketing-for-cricket-app",
+    related: "crex",
   },
 ];
 

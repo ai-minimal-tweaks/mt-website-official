@@ -54,7 +54,9 @@ function splitWords(el: HTMLElement) {
  *   data-anim="shell"     dark hero shells recede and tilt back as you scroll past
  *   data-anim="footer"    footer content rises from beneath the page
  *   data-anim-pan         (phones) the <img> inside pans left→right while scrolling
+ *   data-anim="stack"     (≥1024px) sticky [data-stack-card] children sink back as the next card slides over
  *   data-magnetic         (fine pointer) element leans toward the cursor
+ *   data-tilt             (fine pointer) card turns in 3D toward the cursor, with a moving glare
  *   .liquid-glass         gets a specular highlight that follows the pointer
  */
 export function MotionProvider({ children }: { children: React.ReactNode }) {
@@ -70,8 +72,9 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
     const fine = matchMedia("(pointer: fine)").matches;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Specular highlight on glass + magnetic buttons. One listener for the whole page.
+    // Specular highlight on glass + magnetic buttons + card tilt. One listener for the whole page.
     let magnet: HTMLElement | null = null;
+    let tilted: HTMLElement | null = null;
     const onPointer = (e: PointerEvent) => {
       const t = e.target as Element | null;
       const glass = t?.closest?.<HTMLElement>(".liquid-glass");
@@ -81,6 +84,25 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
         glass.style.setProperty("--gy", `${e.clientY - r.top}px`);
       }
       if (!fine || reduce) return;
+      const tiltEl = t?.closest?.<HTMLElement>("[data-tilt]") ?? null;
+      if (tilted && tilted !== tiltEl) {
+        gsap.to(tilted, { rotationX: 0, rotationY: 0, duration: 1, ease: "elastic.out(1, 0.5)" });
+      }
+      tilted = tiltEl;
+      if (tiltEl) {
+        const r = tiltEl.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width;
+        const py = (e.clientY - r.top) / r.height;
+        tiltEl.style.setProperty("--tx", `${px * 100}%`);
+        tiltEl.style.setProperty("--ty", `${py * 100}%`);
+        gsap.to(tiltEl, {
+          rotationY: (px - 0.5) * 9,
+          rotationX: (0.5 - py) * 9,
+          transformPerspective: 1000,
+          duration: 0.6,
+          ease: "power3.out",
+        });
+      }
       const m = t?.closest?.<HTMLElement>("[data-magnetic]") ?? null;
       if (magnet && magnet !== m) {
         gsap.to(magnet, { x: 0, y: 0, duration: 0.9, ease: "elastic.out(1, 0.45)" });
@@ -331,6 +353,27 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
                   scrollTrigger: { trigger: card, containerAnimation: tween, start: "left right", end: "center 60%", scrub: true },
                 },
               );
+            });
+          });
+        }
+
+        // Sticky card stack: each card scales back and dims as the next one slides over it.
+        if (wide) {
+          q("[data-anim='stack']").forEach((stack) => {
+            const cards = gsap.utils.toArray<HTMLElement>(stack.querySelectorAll("[data-stack-card]"));
+            cards.forEach((card, i) => {
+              const next = cards[i + 1];
+              if (!next) return;
+              gsap.to(card, {
+                scale: 0.9,
+                yPercent: -4,
+                rotationX: 6,
+                autoAlpha: 0.35,
+                transformPerspective: 1400,
+                transformOrigin: "50% 0%",
+                ease: "none",
+                scrollTrigger: { trigger: next, start: "top 85%", end: "top 25%", scrub: 0.6 },
+              });
             });
           });
         }

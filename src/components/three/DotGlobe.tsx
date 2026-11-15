@@ -154,6 +154,7 @@ export function DotGlobe({ className = "" }: { className?: string }) {
     let raf = 0;
     let visible = false;
     let t = 0;
+    let scroll = 0;
     const tick = () => {
       t += 0.016;
       if (!dragging) {
@@ -166,6 +167,14 @@ export function DotGlobe({ className = "" }: { className?: string }) {
         (h.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 1 - (s - 1) / 2.2);
       });
       arcMats.forEach((m) => (m.opacity = 0.45 + 0.3 * Math.sin(t * 1.4)));
+      // Scroll camera: as the globe crosses the viewport the camera swings over it (tilt) and pushes in.
+      const rect = host.getBoundingClientRect();
+      const through = Math.min(Math.max(1 - (rect.top + rect.height) / (window.innerHeight + rect.height), 0), 1); // 0 entering → 1 leaving
+      const k = (through - 0.5) * 2; // -1 … 1
+      scroll += (k - scroll) * 0.08;
+      camera.position.set(0, scroll * -0.9, 4.4 - (1 - Math.abs(scroll)) * 0.5);
+      camera.lookAt(0, 0, 0);
+      globe.rotation.x = 0.38 + scroll * 0.35;
       renderer.render(scene, camera);
       if (visible && !reduce) raf = requestAnimationFrame(tick);
     };

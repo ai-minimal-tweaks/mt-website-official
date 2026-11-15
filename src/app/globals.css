@@ -230,3 +230,21 @@ html.motion [data-hero-in] {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Card tilt glare: a soft light that tracks the cursor across [data-tilt] cards (fine pointers only). */
+@media (pointer: fine) {
+  [data-tilt]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(28rem circle at var(--tx, 50%) var(--ty, 50%), rgb(255 255 255 / 0.22), transparent 42%);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+  [data-tilt]:hover::after {
+    opacity: 1;
+  }
+}

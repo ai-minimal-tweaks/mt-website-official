@@ -1,19 +1,30 @@
-// Case-study content migrated from the live minimaltweaks.com /case-studies/* pages (copy and image URLs as published).
-// Regenerate case-studies.json with scripts/content/ (extract-case-studies.mjs → build-case-content.mjs); edit client/industry/category
-// mapping there rather than by hand.
-import data from "./case-studies.json";
+// Case-study types and helpers, safe to import from client components.
+// The records themselves live in /data/case-studies.json and are read and written by the CMS store
+// (src/lib/cms/store.ts, server only), so new case studies go live without a code change.
 
-export type Block = { type: "p" | "li" | "h" | "quote"; text: string } | { type: "image"; src: string; alt: string };
+export type Block =
+  | { type: "p" | "li" | "h" | "quote"; text: string }
+  | { type: "image"; src: string; alt: string }
+  /** YouTube / Vimeo link or a direct video file (uploaded or hosted). Shown in the work showcase. */
+  | { type: "video"; src: string; title?: string };
 
 export type Category = "Branding" | "Content" | "Social" | "Campaigns" | "Web" | "SEO";
 
+export type CaseStudyStatus = "published" | "draft";
+
 export type CaseStudy = {
+  id: string;
+  /** URL segment: /work/case-study/<slug>. Derived from the client name. */
   slug: string;
+  /** Old /case-studies/<slug> addresses that redirect here. */
+  legacySlugs: string[];
+  status: CaseStudyStatus;
   client: string;
   industry: string;
   service: string;
   categories: Category[];
   concept: boolean;
+  /** ≥ 0: shown in the "Selected work" grid on /work, in ascending order. -1: client archive list. */
   featured: number;
   title: string;
   description: string;
@@ -24,21 +35,31 @@ export type CaseStudy = {
   approach: Block[];
   solution: Block[];
   conclusion: Block[];
+  /** Optional quote shown on the page; when empty, a matching quote from content/testimonials.ts is used. */
+  testimonial: { quote: string; name: string; role: string } | null;
+  createdAt: string;
+  updatedAt: string;
 };
-
-export const caseStudies = data as CaseStudy[];
 
 export const categories: Category[] = ["Branding", "Content", "Social", "Campaigns", "Web", "SEO"];
 
-export const featuredStudies = caseStudies.filter((c) => c.featured >= 0);
-
-export const getCaseStudy = (slug: string) => caseStudies.find((c) => c.slug === slug);
-
-/** Next case to read: the following study in /work order, wrapping round. */
-export const nextCaseStudy = (slug: string) => {
-  const i = caseStudies.findIndex((c) => c.slug === slug);
-  return caseStudies[(i + 1) % caseStudies.length];
-};
+export const caseStudyHref = (slug: string) => `/work/case-study/${slug}`;
 
 export const imagesOf = (c: CaseStudy) =>
   [...c.brief, ...c.approach, ...c.solution, ...c.conclusion].filter((b): b is Extract<Block, { type: "image" }> => b.type === "image");
+
+/** Images and videos in page order (the first image becomes the approach visual on the page). */
+export const mediaOf = (c: CaseStudy) =>
+  [...c.brief, ...c.approach, ...c.solution, ...c.conclusion].filter(
+    (b): b is Extract<Block, { type: "image" | "video" }> => b.type === "image" || b.type === "video",
+  );
+
+/** Uploaded files are served by our own media route and skip the image optimiser. */
+export const isUploaded = (src: string) => src.startsWith("/api/media/");
+
+export const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");

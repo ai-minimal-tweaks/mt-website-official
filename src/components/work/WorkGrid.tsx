@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { caseStudies, categories, type Category } from "@/content/case-studies";
+import { categories, type CaseStudy, type Category } from "@/content/case-studies";
 import { CaseCard } from "@/components/shared";
 import { Pill } from "@/components/ui";
 
@@ -17,7 +17,7 @@ gsap.registerPlugin(Flip, ScrollTrigger, useGSAP);
  * Featured layout (2 large · 3 · 1 + "your brand" card) followed by the full archive. Choosing a category
  * collapses both into one filtered grid. The category lives in ?category= so it can be linked to.
  */
-export function WorkGrid() {
+export function WorkGrid({ caseStudies }: { caseStudies: CaseStudy[] }) {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -26,9 +26,9 @@ export function WorkGrid() {
   const root = useRef<HTMLDivElement>(null);
   const flipState = useRef<Flip.FlipState | null>(null);
 
-  const featured = caseStudies.filter((c) => c.featured >= 0);
+  const featured = caseStudies.filter((c) => c.featured >= 0).sort((a, b) => a.featured - b.featured);
   const archive = caseStudies.filter((c) => c.featured < 0);
-  const filtered = useMemo(() => (active ? caseStudies.filter((c) => c.categories.includes(active)) : []), [active]);
+  const filtered = useMemo(() => (active ? caseStudies.filter((c) => c.categories.includes(active)) : []), [active, caseStudies]);
 
   const choose = (c: Category | null) => {
     if (root.current) flipState.current = Flip.getState(root.current.querySelectorAll("[data-card]"));

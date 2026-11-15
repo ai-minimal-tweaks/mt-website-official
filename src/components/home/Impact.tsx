@@ -1,6 +1,6 @@
 import { stats } from "@/content/home";
 import { DotGlobe } from "@/components/three/DotGlobe";
-import { Pill, SectionHeading } from "@/components/ui";
+import { LogoMark, Pill, SectionHeading } from "@/components/ui";
 
 const brandBadges = [
   { bg: "bg-[#e4245c]", label: "C" },
@@ -110,9 +110,7 @@ function Orbit() {
   return (
     <div aria-hidden className="pointer-events-none absolute -bottom-28 -right-28 size-[18rem] [perspective:900px] lg:-bottom-16 lg:-right-14 lg:size-[21rem]">
       <div className="absolute inset-0 grid place-items-center">
-        <span className="z-10 flex size-16 items-center justify-center whitespace-nowrap rounded-full bg-navy text-base font-bold text-white shadow-[0_20px_40px_-12px_rgba(27,31,59,.7)]">
-          M<span className="text-ember">T</span>
-        </span>
+        <LogoMark className="z-10 size-16 drop-shadow-[0_20px_30px_rgba(15,41,68,.55)]" />
       </div>
       {rings.map((ring, i) => (
         <div key={i} className="absolute inset-0" style={{ scale: String(ring.scale) }}>

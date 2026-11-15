@@ -1,10 +1,10 @@
 import type { Block } from "@/content/case-studies";
 
-type TextBlock = Exclude<Block, { type: "image" }>;
+type TextBlock = Extract<Block, { type: "p" | "li" | "h" | "quote" }>;
 
-/** Renders migrated case-study copy: paragraphs, sub-heads, quotes and runs of list items as one list. */
+/** Renders case-study copy (media blocks are placed by the page, not here): paragraphs, sub-heads, quotes and runs of list items as one list. */
 export function RichBlocks({ blocks, tone = "dark", className = "" }: { blocks: Block[]; tone?: "dark" | "light"; className?: string }) {
-  const text = blocks.filter((b): b is TextBlock => b.type !== "image");
+  const text = blocks.filter((b): b is TextBlock => b.type !== "image" && b.type !== "video");
   const groups: (TextBlock | TextBlock[])[] = [];
   for (const b of text) {
     const last = groups.at(-1);

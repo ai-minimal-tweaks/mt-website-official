@@ -18,7 +18,7 @@ export const site = {
 
 // `match` lists other path prefixes that light up the item (case studies live under Work).
 export const primaryNav: NavLink[] = [
-  { label: "Work", href: "/work", match: ["/case-studies"] },
+  { label: "Work", href: "/work", match: ["/work", "/case-studies"] },
   { label: "Services", href: "/services", match: ["/webflow-development-agency"] },
   { label: "About", href: "/about", match: ["/tweakers"] },
   { label: "Testimonials", href: "/testimonials" },

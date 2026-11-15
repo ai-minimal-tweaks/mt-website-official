@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-// Rendered for every URL without a page (including unknown /case-studies/* slugs), with a 404 status.
+// Rendered for every URL without a page (including unknown /work/case-study/* slugs), with a 404 status.
 export default function NotFound() {
   return (
     <>

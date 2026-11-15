@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import Image from "next/image";
-import { Pill } from "@/components/ui";
+import { LogoMark, Pill } from "@/components/ui";
 
 const TEAM_PHOTO = "/images/team.jpg";
 const hasTeamPhoto = fs.existsSync(path.join(process.cwd(), "public", TEAM_PHOTO));
@@ -74,9 +74,7 @@ function TeamPlaceholder() {
       <div className="absolute inset-x-0 top-[12%] flex justify-center gap-10 text-white/80">
         {["Minimal Tweaks", "Minimal Tweaks"].map((t, i) => (
           <span key={i} className="flex items-center gap-2 text-sm font-semibold">
-            <span className="flex size-6 items-center justify-center whitespace-nowrap rounded bg-navy text-[0.55rem]">
-              M<span className="text-ember">T</span>
-            </span>
+            <LogoMark className="size-6" />
             {t}
           </span>
         ))}

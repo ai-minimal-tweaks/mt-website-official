@@ -1,4 +1,4 @@
-// raw.json (from extract-case-studies.mjs) → src/content/case-studies.json used by /work and /case-studies/[slug].
+// One-time migration (already run): raw.json → case-studies records. Records now live in /data/case-studies.json and are edited in the CMS at /admin; do not re-run over CMS edits.
 // usage: node build-case-content.mjs <raw.json> <out.json>
 import fs from "node:fs";
 

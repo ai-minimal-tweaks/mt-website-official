@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
 import { CtaBand, PageHero } from "@/components/shared";
 import { Arrow, SectionHeading } from "@/components/ui";
-import { getCaseStudy } from "@/content/case-studies";
+import { caseStudyHref } from "@/content/case-studies";
+import { getCaseStudy } from "@/lib/cms/store";
 import { testimonials, trustedBrands, type Testimonial } from "@/content/testimonials";
 import { site } from "@/lib/site";
 
@@ -73,7 +74,7 @@ export default function TestimonialsPage() {
                 </p>
               )}
               {featuredCase && (
-                <Link href={`/case-studies/${featuredCase.slug}`} className="group flex items-center gap-4 rounded-xl bg-white p-2 pr-5">
+                <Link href={caseStudyHref(featuredCase.slug)} className="group flex items-center gap-4 rounded-xl bg-white p-2 pr-5">
                   <span className="relative block h-14 w-20 overflow-hidden rounded-lg bg-ink">
                     <Image src={featuredCase.cover} alt="" fill sizes="80px" className="object-cover" />
                   </span>
@@ -161,7 +162,7 @@ function Quote({ t }: { t: Testimonial }) {
       <figcaption className="mt-6 flex items-center justify-between gap-3">
         <Author t={t} />
         {study && (
-          <Link href={`/case-studies/${study.slug}`} aria-label={`Read the ${t.brand} case study`} className="grid size-8 place-items-center rounded-lg bg-white transition hover:bg-ink hover:text-white">
+          <Link href={caseStudyHref(study.slug)} aria-label={`Read the ${t.brand} case study`} className="grid size-8 place-items-center rounded-lg bg-white transition hover:bg-ink hover:text-white">
             <Arrow className="size-3.5" />
           </Link>
         )}

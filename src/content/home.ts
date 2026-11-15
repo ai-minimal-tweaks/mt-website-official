@@ -23,7 +23,7 @@ export const projects: Project[] = [
     tag: "Social Media",
     industry: "Sports & Fantasy",
     summary: "Social media campaigns for India's cricket community",
-    href: "/case-studies/social-media-marketing-for-cricket-app",
+    href: "/work/case-study/crex",
     art: "crex",
   },
   {
@@ -32,7 +32,7 @@ export const projects: Project[] = [
     tag: "Webflow",
     industry: "SaaS",
     summary: "A sharper digital experience for a brand management platform",
-    href: "/case-studies/website-revamp-for-a-brand-management-software",
+    href: "/work/case-study/artwork-flow",
     art: "artworkflow",
   },
   {
@@ -41,7 +41,7 @@ export const projects: Project[] = [
     tag: "UI/UX",
     industry: "FMCG",
     summary: "A web experience for a growing FMCG brand",
-    href: "/case-studies/webflow-website-for-a-fmcg-brand",
+    href: "/work/case-study/crunchy-cashews",
     art: "crunchy",
   },
   {
@@ -50,7 +50,7 @@ export const projects: Project[] = [
     tag: "Branding",
     industry: "Finance",
     summary: "Building a modern identity for a finance brand",
-    href: "/case-studies/building-a-brand-identity-for-a-finance-organization",
+    href: "/work/case-study/finsense",
     art: "finsense",
   },
 ];
@@ -109,7 +109,7 @@ export const testimonials = [
       brand: "Finsense",
       summary:
         "With a fresh brand identity designed by Tweakers, Finsense went fully digital with a new website built on Webflow.",
-      href: "/case-studies/webflow-development-of-wealth-management-company",
+      href: "/work/case-study/finsense-website",
       art: "finsense" as const,
     },
   },
@@ -121,7 +121,7 @@ export const testimonials = [
     result: {
       brand: "Crunchy Cashews",
       summary: "Brand identity and a website for a growing FMCG brand — built exactly as the founder envisioned.",
-      href: "/case-studies/webflow-website-for-a-fmcg-brand",
+      href: "/work/case-study/crunchy-cashews",
       art: "crunchy" as const,
     },
   },
@@ -133,7 +133,7 @@ export const testimonials = [
       brand: "Relay Commerce",
       summary:
         "A website revamp in Webflow with a more consistent, modern visual design, better Core Web Vitals and a smoother browsing experience.",
-      href: "/case-studies/website-revamp-in-webflow-for-a-b2b-brand",
+      href: "/work/case-study/relay-commerce",
       art: "artworkflow" as const,
     },
   },

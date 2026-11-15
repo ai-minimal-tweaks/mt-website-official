@@ -109,8 +109,9 @@ export function Work() {
                   href={p.href}
                   data-card
                   data-anim-item
+                  data-tilt
                   data-flip-id={p.slug}
-                  className="group block overflow-hidden rounded-card border border-line bg-mist p-2 transition-shadow duration-500 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,.35)]"
+                  className="group relative block overflow-hidden rounded-card border border-line bg-mist p-2 transition-shadow duration-500 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,.35)]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden rounded-[0.9rem]">
                     <div className="absolute inset-0 transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.05]">

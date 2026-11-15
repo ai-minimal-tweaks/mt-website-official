@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CtaBand, PageHero, SelectWord } from "@/components/shared";
 import { SectionHeading } from "@/components/ui";
 import { WorkGrid } from "@/components/work/WorkGrid";
-import { caseStudies } from "@/content/case-studies";
+import { getCaseStudies } from "@/lib/cms/store";
 
 export const metadata: Metadata = {
   title: "Work Case Studies",
@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default function WorkPage() {
+  const caseStudies = getCaseStudies();
   return (
     <>
       <main>
@@ -44,7 +45,7 @@ export default function WorkPage() {
             </div>
             {/* useSearchParams needs a Suspense boundary for static rendering */}
             <Suspense>
-              <WorkGrid />
+              <WorkGrid caseStudies={caseStudies} />
             </Suspense>
           </div>
         </section>

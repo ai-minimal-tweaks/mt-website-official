@@ -17,7 +17,7 @@ export const testimonials: Testimonial[] = [
     name: "Udit Lohiya",
     role: "CFO, Finsense",
     brand: "Finsense",
-    caseSlug: "webflow-development-of-wealth-management-company",
+    caseSlug: "finsense-website",
     result: "Brand identity and Webflow website from one team",
   },
   {
@@ -26,7 +26,7 @@ export const testimonials: Testimonial[] = [
     name: "Shubham Saurabh",
     role: "CEO, Jamsfy",
     brand: "Jamsfy",
-    caseSlug: "jamstack-seo-case-study",
+    caseSlug: "jamsfy",
     result: "10% organic growth in 3 months",
   },
   {
@@ -35,7 +35,7 @@ export const testimonials: Testimonial[] = [
     name: "Nitesh Jindal",
     role: "Founder, Crunchy Cashews",
     brand: "Crunchy Cashews",
-    caseSlug: "webflow-website-for-a-fmcg-brand",
+    caseSlug: "crunchy-cashews",
     result: "Brand identity and website",
   },
   {
@@ -44,7 +44,7 @@ export const testimonials: Testimonial[] = [
     name: "Anastasia Tarkhanova",
     role: "Sockrates Custom",
     brand: "Sockrates",
-    caseSlug: "boosted-organic-traffic-by-68",
+    caseSlug: "sockrates",
     result: "68% more organic traffic after the Webflow move",
   },
   {
@@ -52,7 +52,7 @@ export const testimonials: Testimonial[] = [
     name: "Austin Simon",
     role: "Co-Founder, Relay Commerce",
     brand: "Relay Commerce",
-    caseSlug: "website-revamp-in-webflow-for-a-b2b-brand",
+    caseSlug: "relay-commerce",
   },
   {
     quote:
@@ -66,7 +66,7 @@ export const testimonials: Testimonial[] = [
     name: "Rakesh Kakkar",
     role: "Co-founder, Runne",
     brand: "Runne",
-    caseSlug: "website-design-for-a-video-production-agency",
+    caseSlug: "runne",
   },
 ];
 

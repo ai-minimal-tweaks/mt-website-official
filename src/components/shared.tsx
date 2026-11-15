@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { GradientField } from "@/components/three/GradientField";
+import { HeroScene } from "@/components/three/HeroScene";
 import { Arrow, Pill } from "@/components/ui";
-import type { CaseStudy } from "@/content/case-studies";
+import { caseStudyHref, isUploaded, type CaseStudy } from "@/content/case-studies";
 
 /** A word wrapped in a Figma-style selection box with corner handles (hero headlines). */
 export function SelectWord({ children }: { children: React.ReactNode }) {
@@ -68,7 +69,7 @@ export function PageHero({
         className={`relative isolate overflow-hidden rounded-[1.5rem] bg-ink text-white will-change-transform sm:rounded-shell ${className}`}
       >
         <GradientField bias={bias} />
-        <GlassOrbs />
+        <HeroScene side={align === "left" ? "right" : "both"} />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,rgba(0,0,0,.35),transparent_70%)]" />
         <div className={`container-site relative z-10 pb-16 pt-32 sm:pb-20 sm:pt-40 ${align === "center" ? "text-center" : ""}`}>{children}</div>
       </div>
@@ -139,16 +140,18 @@ export function CaseCard({
 }) {
   return (
     <Link
-      href={`/case-studies/${study.slug}`}
+      href={caseStudyHref(study.slug)}
       data-card
+      data-tilt
       data-flip-id={study.slug}
-      className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-mist p-2 transition-shadow duration-500 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,.35)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-card border border-line bg-mist p-2 transition-shadow duration-500 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,.35)]"
     >
       <div data-anim={reveal ? "media" : undefined} className={`relative overflow-hidden rounded-[0.9rem] bg-ink ${size === "lg" ? "aspect-[16/11]" : "aspect-[4/3]"}`}>
         {study.cover && (
           <div className="absolute inset-0 transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.05]">
           <Image
             src={study.cover}
+            unoptimized={isUploaded(study.cover)}
             alt={`${study.client} — ${study.title}`}
             fill
             priority={priority}

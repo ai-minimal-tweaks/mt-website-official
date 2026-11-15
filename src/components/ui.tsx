@@ -59,14 +59,30 @@ export function Chevron({ className = "" }: { className?: string }) {
 }
 
 /** Placeholder brand mark — swap for the final logo SVG when supplied. */
+/**
+ * The official Minimal Tweaks mark: an orange "MT" monogram on a navy tile, traced as vector from the
+ * brand PNG (public/images/brand/minimal-tweaks-logo.png) on its 44-unit grid so it stays sharp at any size.
+ */
+export function LogoMark({ className = "size-8", title }: { className?: string; title?: string }) {
+  return (
+    <svg viewBox="0 0 44 44" className={className} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
+      <rect x="1" y="1" width="42" height="42" rx="3" fill="#0F2944" />
+      <path
+        fill="#FE9004"
+        d="M12 15h4.2l4 4.4V15H32.6v3.4h-4.6V29.4h-3.6V18.4h-4.2v5.2l-4.6-5V29.4H12Z"
+      />
+    </svg>
+  );
+}
+
 export function Logo({ tone = "dark", withWordmark = true }: { tone?: "dark" | "light"; withWordmark?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2.5">
-      <span className="flex size-8 items-center justify-center whitespace-nowrap rounded-md bg-navy font-sans text-[0.7rem] font-bold tracking-tight text-white">
-        M<span className="text-ember">T</span>
-      </span>
+      <LogoMark className="size-9" />
       {withWordmark && (
-        <span className={`font-sans text-[0.95rem] font-semibold tracking-tight ${tone === "dark" ? "text-ink" : "text-white"}`}>
+        <span
+          className={`font-sans text-[1.05rem] font-bold tracking-[-0.02em] ${tone === "dark" ? "text-[#0F2944]" : "text-white"}`}
+        >
           Minimal Tweaks
         </span>
       )}
