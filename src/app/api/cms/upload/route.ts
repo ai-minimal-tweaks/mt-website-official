@@ -3,7 +3,8 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { isSignedIn } from "@/lib/cms/guard";
-import { UPLOAD_DIR } from "@/lib/cms/store";
+import { ReadOnlyStoreError, UPLOAD_DIR } from "@/lib/cms/store";
+import { saveFailed } from "@/lib/cms/guard";
 
 // Allowed upload types → stored extension. SVG is left out on purpose (it can carry scripts).
 const TYPES: Record<string, string> = {
@@ -30,7 +31,12 @@ export async function POST(req: Request) {
   if (file.size > max) return NextResponse.json({ error: `File is larger than ${max / 1024 / 1024} MB.` }, { status: 413 });
 
   const name = `${Date.now().toString(36)}-${randomUUID().slice(0, 8)}.${ext}`;
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  await fs.writeFile(path.join(UPLOAD_DIR, name), Buffer.from(await file.arrayBuffer()));
+  try {
+    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+    await fs.writeFile(path.join(UPLOAD_DIR, name), Buffer.from(await file.arrayBuffer()));
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException)?.code ?? "";
+    return saveFailed(["EROFS", "EACCES", "EPERM"].includes(code) ? new ReadOnlyStoreError() : e);
+  }
   return NextResponse.json({ url: `/api/media/${name}`, type: file.type.startsWith("video/") ? "video" : "image" }, { status: 201 });
 }

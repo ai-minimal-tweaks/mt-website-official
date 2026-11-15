@@ -18,7 +18,27 @@ function readAll(): CaseStudy[] {
   return JSON.parse(fs.readFileSync(FILE, "utf8")) as CaseStudy[];
 }
 
+/** Raised when the host's file system cannot be written (e.g. Vercel serverless functions). */
+export class ReadOnlyStoreError extends Error {
+  constructor() {
+    super(
+      "This server can't save changes: its file system is read-only (for example on Vercel). Edit locally and redeploy, or connect a database or storage service.",
+    );
+  }
+}
+
+const isReadOnly = (e: unknown) => ["EROFS", "EACCES", "EPERM"].includes((e as NodeJS.ErrnoException)?.code ?? "");
+
 function writeAll(list: CaseStudy[]) {
+  try {
+    writeFile(list);
+  } catch (e) {
+    if (isReadOnly(e)) throw new ReadOnlyStoreError();
+    throw e;
+  }
+}
+
+function writeFile(list: CaseStudy[]) {
   // Write to a temp file and rename, so a crash mid-write never leaves a half-written JSON file.
   const tmp = `${FILE}.${process.pid}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(list, null, 2) + "\n");

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { deleteCaseStudy, getById, updateCaseStudy } from "@/lib/cms/store";
-import { isSignedIn, refreshSite } from "@/lib/cms/guard";
+import { isSignedIn, refreshSite, saveFailed } from "@/lib/cms/guard";
 import { parseCaseStudy } from "@/lib/cms/validate";
 
 export const dynamic = "force-dynamic";
@@ -18,15 +18,23 @@ export async function PUT(req: Request, { params }: Ctx) {
   if (!(await isSignedIn())) return unauthorized();
   const parsed = parseCaseStudy(await req.json().catch(() => null));
   if ("errors" in parsed) return NextResponse.json({ errors: parsed.errors }, { status: 422 });
-  const record = updateCaseStudy((await params).id, parsed.data);
-  if (!record) return missing();
-  refreshSite();
-  return NextResponse.json(record);
+  try {
+    const record = updateCaseStudy((await params).id, parsed.data);
+    if (!record) return missing();
+    refreshSite();
+    return NextResponse.json(record);
+  } catch (e) {
+    return saveFailed(e);
+  }
 }
 
 export async function DELETE(_: Request, { params }: Ctx) {
   if (!(await isSignedIn())) return unauthorized();
-  if (!deleteCaseStudy((await params).id)) return missing();
-  refreshSite();
-  return NextResponse.json({ ok: true });
+  try {
+    if (!deleteCaseStudy((await params).id)) return missing();
+    refreshSite();
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    return saveFailed(e);
+  }
 }
