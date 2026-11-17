@@ -348,9 +348,6 @@ export function IntroGate({ onTuned, onGone }: Props) {
           <span className="size-2 rounded-full bg-[#ff3b1a] motion-safe:animate-[osd-blink_1.1s_steps(2)_infinite]" />
           No signal
         </div>
-        <div className="absolute right-5 top-5 text-[0.7rem] tracking-[0.25em] text-[#7CFF8A] [text-shadow:0_0_8px_rgba(124,255,138,.6)] sm:right-8 sm:top-7 sm:text-xs">
-          CH 03 · MT
-        </div>
         <div data-gate-prompt className="absolute inset-x-0 bottom-[16vh] px-6 text-center sm:bottom-[14vh]">
           <p className="text-[clamp(1.1rem,0.8rem+1.6vw,2rem)] font-semibold tracking-[0.18em] text-white [text-shadow:0_0_18px_rgba(255,106,26,.55)]">
             Draw an <span className="text-[#FE9004]">M</span> to tune in
