@@ -9,7 +9,8 @@ import type { EnquiryKind } from "@/content/contact";
 import { site, socials } from "@/lib/site";
 import { IntroGate } from "./IntroGate";
 import { HeroHeadline } from "./HeroHeadline";
-import { BrandsCarousel } from "./BrandsCarousel";
+import { Subline } from "./Subline";
+import { BrandsMarquee } from "./BrandsMarquee";
 import { EnquiryModal } from "./EnquiryModal";
 import { ArcadeButton, CtaButton, TopBar } from "./parts";
 import type { Pt } from "./recognizeM";
@@ -143,11 +144,11 @@ function DesktopHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => 
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_70%_at_25%_55%,rgba(0,0,0,.55),transparent_75%)]"
         />
 
-        <div className="relative z-10 grid w-full items-center gap-10 px-[4%] py-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-6 xl:px-[5%]">
+        <div className="relative z-10 grid w-full items-end gap-10 px-[5%] py-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8">
           <div className="min-w-0">
             <HeroHeadline layout="desktop" play={play} />
-            <p data-rise="up" className="mt-3 pl-[5%] text-[clamp(1.05rem,0.7rem+0.8vw,1.6rem)] text-white/85">
-              {homeV2.sub}
+            <p data-rise="up" className="mt-3 text-[clamp(1.05rem,0.7rem+0.8vw,1.6rem)] text-white/85">
+              <Subline />
             </p>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row lg:flex-col">
@@ -172,8 +173,8 @@ function DesktopHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => 
         >
           <WaveText text={homeV2.brandsLabel} />
         </h2>
-        <div data-rise="up" className="relative h-[clamp(10rem,22vh,15rem)]">
-          <BrandsCarousel play={play} className="absolute inset-0" />
+        <div data-rise="up" className="mt-3">
+          <BrandsMarquee />
         </div>
       </section>
 
@@ -309,7 +310,7 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
         <TopBar tagline={homeV2.tagline} play={play} compact />
         <div
           ref={hero}
-          className="relative isolate flex flex-1 flex-col justify-end overflow-hidden rounded-[1.6rem] bg-ink px-1 pb-5 text-white"
+          className="relative isolate flex flex-1 flex-col justify-end overflow-hidden rounded-[1.6rem] bg-ink px-5 pb-5 text-white"
         >
           <GradientField priority />
           <div
@@ -322,10 +323,10 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
           />
           <div className="relative z-10">
             <HeroHeadline layout="mobile" play={play} />
-            <p data-rise="up" className="mt-1 px-[5%] text-[0.98rem] leading-snug text-white/85">
-              {homeV2.sub}
+            <p data-rise="up" className="mt-1 text-[0.98rem] leading-snug text-white/85">
+              <Subline compact />
             </p>
-            <div className="mt-5 grid gap-3.5 px-3.5">
+            <div className="mt-5 grid gap-3.5">
               <div data-rise="up">
                 <ArcadeButton variant="ember" onClick={() => open("project")}>
                   {homeV2.ctas.project}
@@ -349,13 +350,13 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
         className="relative flex h-[100svh] snap-start flex-col justify-center overflow-hidden bg-[#fdf1e6] py-10"
       >
         <p className="px-6 font-mono text-[0.68rem] uppercase tracking-[0.25em] text-ink/50">
-          {String(homeV2.brands.length).padStart(2, "0")} brands unlocked · swipe ←→
+          {String(homeV2.brands.length).padStart(2, "0")} brands unlocked · on loop
         </p>
         <h2 className="mt-3 px-6 text-[2.6rem] font-bold leading-[0.95] tracking-[-0.05em] text-ink">
           Brands we’ve <span className="text-[#ff6a1a]">tweaked</span>
         </h2>
-        <div className="relative mt-6 h-[44svh]">
-          <BrandsCarousel play={play && ch >= 1} cardHeight={0.4} className="absolute inset-0" />
+        <div className="mt-8">
+          <BrandsMarquee compact />
         </div>
       </section>
 

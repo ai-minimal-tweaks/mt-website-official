@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { buzz } from "./buzz";
 import { looksLikeM, type Pt } from "./recognizeM";
+import { pauseBackground } from "./pauseBackground";
 
 type Props = {
   /** Called the moment the M is recognised, with the drawing's centre (viewport px): the reveal zooms out from there. */
@@ -140,6 +141,13 @@ export function IntroGate({ onTuned, onGone }: Props) {
     };
   }, []);
 
+  // Nothing behind the static needs to animate yet; released the moment the M lands, so the reveal is live.
+  const releaseBg = useRef<() => void>(() => {});
+  useEffect(() => {
+    releaseBg.current = pauseBackground();
+    return releaseBg.current;
+  }, []);
+
   // Scroll is locked while the gate is up.
   useEffect(() => {
     const html = document.documentElement;
@@ -153,6 +161,7 @@ export function IntroGate({ onTuned, onGone }: Props) {
   const tuneIn = (at: Pt) => {
     if (done.current) return;
     done.current = true;
+    releaseBg.current();
     state.current.tuned = true;
     try {
       sessionStorage.setItem("mt-tuned", "1");

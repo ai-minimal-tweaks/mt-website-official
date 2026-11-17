@@ -42,5 +42,6 @@ Separately from one-pager mode, the homepage itself has two designs, chosen by `
 "Bring back the old homepage" / "remove the temporary homepage" means setting `HOMEPAGE = "classic"`.
 When the other pages are unhidden as well, also set `ONE_PAGER = false`: the classic homepage links to them.
 
-Both forms post to `/api/contact`, which emails every enquiry through Resend (see `.env.example`:
-`RESEND_API_KEY`, `CONTACT_FROM`, `CONTACT_TO`).
+Both forms post to `/api/contact`, which emails every enquiry through Resend (`RESEND_API_KEY` in Vercel).
+Sender (`contact@minimaltweaks.com`) and recipients (anshul@ and shubham@minimaltweaks.com) are set in
+`src/lib/email/config.ts`; `CONTACT_FROM` / `CONTACT_TO` env vars override them without a code change.

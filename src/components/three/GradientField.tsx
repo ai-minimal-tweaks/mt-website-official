@@ -98,7 +98,7 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0], pr
     const mobile = matchMedia("(max-width: 767px)").matches;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     // Render below native resolution — the field is soft, so this is invisible and saves a lot of GPU.
-    const scale = mobile ? 0.5 : 0.65;
+    const scale = mobile ? 0.5 : 0.55;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
     renderer.domElement.className = "absolute inset-0 size-full";
     renderer.domElement.setAttribute("aria-hidden", "true");
@@ -144,7 +144,13 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0], pr
     let visible = false;
     let raf = 0;
     let last = performance.now();
+    const html = document.documentElement;
     const tick = (now: number) => {
+      if (visible && !reduce) raf = requestAnimationFrame(tick);
+      // The light drifts slowly, so 30 fps looks identical to 60 and halves the GPU work. Keeping the GPU cool is
+      // what keeps the page smooth over time: at a constant full load laptops heat up and throttle.
+      // Nothing is drawn while an overlay covers the hero (intro gate, form pop-up: html[data-bg-pause]).
+      if (now - last < 32 || html.hasAttribute("data-bg-pause")) return;
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
       // Wrapped so shader inputs stay small (mobile float precision); an hour of drift before it wraps.
@@ -153,7 +159,6 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0], pr
       const rect = host.getBoundingClientRect();
       uniforms.uScroll.value = Math.min(Math.max(-rect.top / Math.max(rect.height, 1), 0), 1);
       renderer.render(scene, camera);
-      if (visible && !reduce) raf = requestAnimationFrame(tick);
     };
 
     const io = new IntersectionObserver(

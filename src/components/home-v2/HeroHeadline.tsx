@@ -98,6 +98,7 @@ export function HeroHeadline({ layout, play }: { layout: "desktop" | "mobile"; p
     <div style={{ width, height: rowH }} className={tone === "ember" ? "text-[#FE9004]" : "text-white"}>
       {play && (
         <TechText
+          sweep={false}
           text={text}
           fontSize={font}
           fontWeight={WEIGHT}
@@ -130,7 +131,9 @@ export function HeroHeadline({ layout, play }: { layout: "desktop" | "mobile"; p
   );
 
   return (
-    <div ref={box} className="relative w-full" aria-hidden>
+    // TechText keeps a 5% inner margin; pull the whole headline left by it so the ink starts on the hero's padding line
+    // (same inset as the buttons on the right).
+    <div ref={box} className="relative w-full" style={{ transform: `translateX(${-pad}px)` }} aria-hidden>
       {size &&
         rows.map((r, i) => (
           <div key={i} style={{ marginTop: i ? -font * 0.36 : 0 }}>
