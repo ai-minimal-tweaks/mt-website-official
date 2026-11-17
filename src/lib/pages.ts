@@ -16,6 +16,17 @@
  */
 export const ONE_PAGER = true;
 
+/**
+ * WHICH HOMEPAGE IS LIVE  (see docs/one-pager-mode.md)
+ *   "v2"      temporary launch homepage ("MT Homepage v2-temporary" design): TV-static intro where the visitor
+ *             draws an M, then a single-screen hero, a brands carousel and two pop-up forms (start a project,
+ *             request the deck). Code: src/components/home-v2/.
+ *   "classic" the full scrolling homepage (Hero, About, Impact, Work, Ideas, Testimonials, FAQ, footer).
+ *             Code: src/components/home/ClassicHome.tsx. Nothing was deleted.
+ * TO RESTORE THE PREVIOUS / FULL HOMEPAGE: set HOMEPAGE to "classic". Independent of ONE_PAGER.
+ */
+export const HOMEPAGE: "v2" | "classic" = "v2";
+
 /** Page paths hidden while ONE_PAGER is on. Each also hides everything below it (e.g. /work/case-study/x). */
 export const HIDDEN_PAGES = ["/work", "/services", "/about", "/testimonials", "/contact", "/case-studies", "/become-a-tweaker"];
 

@@ -248,3 +248,81 @@ html.motion [data-hero-in] {
     opacity: 1;
   }
 }
+
+/* ───────────── v2 homepage (src/components/home-v2) ───────────── */
+@keyframes tv-roll {
+  from { transform: translateY(-25vh); }
+  to { transform: translateY(110vh); }
+}
+@keyframes osd-blink {
+  50% { opacity: 0; }
+}
+@keyframes swipe-up {
+  0%, 100% { transform: translateY(2px); opacity: 0.5; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+@keyframes cta-sheen {
+  0%, 62% { transform: translateX(-130%) skewX(-18deg); }
+  100% { transform: translateX(330%) skewX(-18deg); }
+}
+@keyframes field-spin {
+  to { --field-angle: 360deg; }
+}
+@property --field-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* A slow light sweep across call-to-action buttons; faster on hover. */
+.cta-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  pointer-events: none;
+  animation: cta-sheen 4.5s ease-in-out infinite;
+}
+.cta-shimmer:hover::after {
+  animation-duration: 1.4s;
+}
+
+/* Form fields: an ember ring rotates around the field that has focus. */
+.field-alive::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 0.85rem;
+  background: conic-gradient(from var(--field-angle), #ff6a1a, #ffb347, #7a1d05, #ff3b1a, #ff6a1a);
+  opacity: 0;
+  transition: opacity 0.3s;
+  animation: field-spin 2.4s linear infinite;
+}
+.field-alive:focus-within::before {
+  opacity: 1;
+}
+.field-alive[data-error]::before {
+  opacity: 1;
+  background: #d9381e;
+}
+
+/* Warm light that follows the pointer inside the enquiry pop-up. */
+.enquiry-glow {
+  background: radial-gradient(26rem circle at var(--gx, 85%) var(--gy, 0%), rgba(255, 179, 71, 0.16), transparent 70%);
+}
+
+/* Channel-change static on phones. The noise image is generated once at runtime (see Experience.tsx). */
+.tv-zap {
+  background-color: #111;
+  background-image: var(--tv-noise);
+  background-size: 160px;
+  image-rendering: pixelated;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-shimmer::after,
+  .field-alive::before {
+    animation: none;
+  }
+}

@@ -27,3 +27,20 @@ The switch is `ONE_PAGER` in [`src/lib/pages.ts`](../src/lib/pages.ts). While it
 
 To unhide only some pages, remove those paths from `HIDDEN_PAGES` in the same file instead. A page with a
 homepage section stand-in also has an entry in `SECTION_FOR_PAGE`; that entry can stay.
+
+## Temporary homepage (v2)
+Separately from one-pager mode, the homepage itself has two designs, chosen by `HOMEPAGE` in
+[`src/lib/pages.ts`](../src/lib/pages.ts):
+
+- `"v2"` (live now): the temporary launch page from the "MT Homepage v2-temporary" design. Visitors see TV
+  static and draw an M (mouse drag or finger) to tune in; the page then zooms out into a single screen with
+  the hero, a brands carousel and two pop-up forms ("Start a project", "Request our deck"). Phones get a
+  game-like "channel" layout. Code: `src/components/home-v2/`.
+- `"classic"`: the full scrolling homepage (Hero, About, Impact, Work, Ideas, Testimonials, FAQ, footer).
+  Code: `src/components/home/ClassicHome.tsx`.
+
+"Bring back the old homepage" / "remove the temporary homepage" means setting `HOMEPAGE = "classic"`.
+When the other pages are unhidden as well, also set `ONE_PAGER = false`: the classic homepage links to them.
+
+Both forms post to `/api/contact`, which emails every enquiry through Resend (see `.env.example`:
+`RESEND_API_KEY`, `CONTACT_FROM`, `CONTACT_TO`).

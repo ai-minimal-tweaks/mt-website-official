@@ -1,7 +1,7 @@
-// Contact form options. The design leaves budget bands as "[set ranges]" — these are starting values to confirm.
+// Contact form options. Budget bands follow the "MT Homepage v2" form design.
 
 export const serviceOptions = ["Creative Thinking", "Creative Scale", "Brand Content", "Social", "Campaigns", "Not sure yet"];
-export const budgetOptions = ["Under ₹2L", "₹2–5L", "₹5L+", "Let's discuss"];
+export const budgetOptions = ["Under ₹3L", "₹5–10L", "₹10L+", "Let’s discuss"];
 export const timelineOptions = ["ASAP", "1–3 months", "3+ months", "Flexible"];
 
 export const nextSteps = [
@@ -10,7 +10,14 @@ export const nextSteps = [
   { title: "Proposal", body: "A clear scope, timeline and cost for the first phase." },
 ];
 
+/** Who receives website enquiries (override with the CONTACT_TO env var, comma-separated). */
+export const leadRecipients = ["anshul@minimaltweaks.com", "shubham@minimaltweaks.com"];
+
+/** The two homepage forms. "deck" asks for the credentials deck; "project" is a full project brief. */
+export type EnquiryKind = "project" | "deck";
+
 export type ContactPayload = {
+  kind: EnquiryKind;
   name: string;
   email: string;
   company?: string;
