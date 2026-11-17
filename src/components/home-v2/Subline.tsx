@@ -16,7 +16,7 @@ const SUBTLE = {
   duration: 1100,
   fontSize: "1em",
   fontWeight: 400,
-  className: "leading-snug! tracking-[-0.005em]!",
+  className: "leading-[1.15]! tracking-[-0.005em]!",
 };
 
 /**
@@ -29,7 +29,7 @@ export function Subline({ compact = false }: { compact?: boolean }) {
   const words = homeV2.sub.split(" ");
   const cut = Math.ceil(words.length * 0.6);
   return (
-    <span className="flex flex-col items-start">
+    <span className="flex flex-col items-start gap-0.5">
       <EchoText text={words.slice(0, cut).join(" ")} trail="auto" {...SUBTLE} />
       <EchoText text={words.slice(cut).join(" ")} trail="auto" {...SUBTLE} />
     </span>

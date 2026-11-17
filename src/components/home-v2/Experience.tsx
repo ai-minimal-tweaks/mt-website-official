@@ -135,6 +135,9 @@ function DesktopHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => 
         className="relative isolate flex min-h-[26rem] flex-[1_1_0] items-center overflow-hidden rounded-[1.75rem] bg-ink text-white"
       >
         <GradientField priority />
+        {/* Warmth to match the design: an orange sky on the right third, a red-brown middle, a low ember glow. Screen
+            blend keeps the moving WebGL light visible underneath. Static CSS, so it costs nothing per frame. */}
+        <div aria-hidden className="hero-warmth pointer-events-none absolute inset-0 mix-blend-screen" />
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(28rem_circle_at_var(--sx,70%)_var(--sy,40%),rgba(255,179,71,.16),transparent_70%)]"
@@ -147,7 +150,8 @@ function DesktopHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => 
         <div className="relative z-10 grid w-full items-end gap-10 px-[5%] py-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8">
           <div className="min-w-0">
             <HeroHeadline layout="desktop" play={play} />
-            <p data-rise="up" className="mt-3 text-[clamp(1.05rem,0.7rem+0.8vw,1.6rem)] text-white/85">
+            {/* Tight line box (1.15) so its bottom sits on the descenders: the buttons' bottom edge lines up with the text. */}
+            <p data-rise="up" className="mt-3 text-[clamp(1.05rem,0.7rem+0.8vw,1.6rem)] leading-[1.15] text-white/85">
               <Subline />
             </p>
           </div>
@@ -306,13 +310,18 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
       <div ref={zap} aria-hidden className="tv-zap pointer-events-none fixed inset-0 z-40 opacity-0" />
 
       {/* CH 01: the hero */}
-      <section data-channel={0} aria-label="Introduction" className="flex h-[100svh] snap-start flex-col gap-2.5 p-2.5">
+      <section
+        data-channel={0}
+        aria-label="Introduction"
+        className="flex h-[100svh] snap-start flex-col gap-3 px-3 pt-3 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+      >
         <TopBar tagline={homeV2.tagline} play={play} compact />
         <div
           ref={hero}
-          className="relative isolate flex flex-1 flex-col justify-end overflow-hidden rounded-[1.6rem] bg-ink px-5 pb-5 text-white"
+          className="relative isolate flex flex-1 flex-col justify-end overflow-hidden rounded-[1.25rem] bg-ink px-5 pb-[calc(1.25rem+7px)] text-white"
         >
           <GradientField priority />
+          <div aria-hidden className="hero-warmth hero-warmth--portrait pointer-events-none absolute inset-0 mix-blend-screen" />
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(16rem_circle_at_var(--sx,70%)_var(--sy,30%),rgba(255,179,71,.22),transparent_70%)]"
@@ -323,10 +332,11 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
           />
           <div className="relative z-10">
             <HeroHeadline layout="mobile" play={play} />
-            <p data-rise="up" className="mt-1 text-[0.98rem] leading-snug text-white/85">
+            <p data-rise="up" className="mt-2 text-[0.98rem] text-white/85">
               <Subline compact />
             </p>
-            <div className="mt-5 grid gap-3.5">
+            {/* 20px between buttons = 13px visible gap above the next button once the 7px press shadow is counted. */}
+            <div className="mt-6 grid gap-5">
               <div data-rise="up">
                 <ArcadeButton variant="ember" onClick={() => open("project")}>
                   {homeV2.ctas.project}
@@ -349,10 +359,10 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
         aria-label={homeV2.brandsLabel}
         className="relative flex h-[100svh] snap-start flex-col justify-center overflow-hidden bg-[#fdf1e6] py-10"
       >
-        <p className="px-6 font-mono text-[0.68rem] uppercase tracking-[0.25em] text-ink/50">
+        <p className="px-8 font-mono text-[0.68rem] uppercase tracking-[0.25em] text-ink/50">
           {String(homeV2.brands.length).padStart(2, "0")} brands unlocked · on loop
         </p>
-        <h2 className="mt-3 px-6 text-[2.6rem] font-bold leading-[0.95] tracking-[-0.05em] text-ink">
+        <h2 className="mt-3 px-8 text-[2.6rem] font-bold leading-[0.95] tracking-[-0.05em] text-ink">
           Brands we’ve <span className="text-[#ff6a1a]">tweaked</span>
         </h2>
         <div className="mt-8">

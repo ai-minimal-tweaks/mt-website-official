@@ -42,7 +42,7 @@ export function TopBar({ tagline, play, compact = false }: { tagline: string; pl
   return (
     <header
       data-rise="down"
-      className={`relative flex items-center justify-between overflow-hidden rounded-[1.1rem] bg-[#fdf1e6] ${compact ? "h-16 px-4" : "h-[5.25rem] px-6 lg:px-7"}`}
+      className={`relative flex items-center justify-between overflow-hidden bg-[#fdf1e6] ${compact ? "h-16 rounded-[1.25rem] px-5" : "h-[5.25rem] rounded-[1.1rem] px-[5%]"}`}
       onPointerMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--bx", `${e.clientX - r.left}px`);
