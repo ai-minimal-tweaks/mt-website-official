@@ -19,6 +19,10 @@ const fragment = /* glsl */ `
   uniform vec2 uRes;
   uniform float uIntensity;
   uniform vec2 uBias;
+  uniform float uWarm; // 0 off, 1 landscape, 2 portrait: the v2 homepage's warm colour balance
+
+  // Soft elliptical glow in CSS coordinates (y down), like radial-gradient(r.x r.y at c, ... transparent outer).
+  float glowAt(vec2 q, vec2 c, vec2 r, float outer){ return 1.0 - smoothstep(0.0, outer, length((q - c) / r)); }
 
   // Sin-free hash (Dave Hoskins). The classic fract(sin(x)*43758.5) hash loses precision on mobile GPUs and
   // turns the smooth light into blocky, polygon-like artifacts.
@@ -29,7 +33,7 @@ const fragment = /* glsl */ `
     float a = hash12(i), b = hash12(i+vec2(1,0)), c = hash12(i+vec2(0,1)), d = hash12(i+vec2(1,1));
     return mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
   }
-  float fbm(vec2 p){ float v = 0.0; float a = 0.5; mat2 r = mat2(0.8,-0.6,0.6,0.8); for(int i=0;i<5;i++){ v += a*noise(p); p = r*p*2.02; a *= 0.5; } return v; }
+  float fbm(vec2 p){ float v = 0.0; float a = 0.5; mat2 r = mat2(0.8,-0.6,0.6,0.8); for(int i=0;i<4;i++){ v += a*noise(p); p = r*p*2.02; a *= 0.5; } return v; }
 
   void main(){
     vec2 uv = vUv;
@@ -63,6 +67,24 @@ const fragment = /* glsl */ `
 
     float vig = smoothstep(1.35, 0.25, length((uv-0.5)*vec2(aspect*0.85, 1.0)));
     col *= mix(0.55, 1.0, vig);
+    // Warm balance from the design (was a CSS screen-blend layer; in the shader it costs no extra compositing).
+    if (uWarm > 0.5) {
+      vec2 q = vec2(uv.x, 1.0 - uv.y);
+      vec3 w;
+      if (uWarm < 1.5) {
+        w  = vec3(1.0, 0.573, 0.204) * 0.85 * glowAt(q, vec2(0.88, 0.18), vec2(0.38, 0.60), 0.75);
+        w += vec3(0.871, 0.329, 0.055) * 0.80 * glowAt(q, vec2(1.00, 0.72), vec2(0.32, 0.75), 0.72);
+        w += vec3(0.588, 0.157, 0.031) * 0.45 * glowAt(q, vec2(0.70, 0.45), vec2(0.30, 0.55), 0.70);
+        w += vec3(1.0, 0.471, 0.157) * 0.45 * glowAt(q, vec2(0.34, 1.00), vec2(0.14, 0.22), 0.75);
+        w += vec3(0.549, 0.094, 0.039) * 0.40 * glowAt(q, vec2(0.32, 0.00), vec2(0.20, 0.30), 0.75);
+        w += vec3(0.91, 0.392, 0.086) * 0.55 * smoothstep(0.48, 1.0, q.x);
+      } else {
+        w  = vec3(1.0, 0.573, 0.204) * 0.85 * glowAt(q, vec2(0.85, 0.06), vec2(0.90, 0.40), 0.80);
+        w += vec3(0.871, 0.329, 0.055) * 0.55 * glowAt(q, vec2(1.00, 0.45), vec2(0.60, 0.40), 0.70);
+        w += vec3(1.0, 0.471, 0.157) * 0.30 * glowAt(q, vec2(0.20, 1.00), vec2(0.50, 0.20), 0.75);
+      }
+      col = 1.0 - (1.0 - col) * (1.0 - clamp(w, 0.0, 1.0)); // screen
+    }
     col += (hash12(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * 0.035; // film grain to avoid banding
     gl_FragColor = vec4(col, 1.0);
   }
@@ -78,9 +100,11 @@ type Props = {
   intensity?: number;
   /** Offsets the glow centres; lets each section frame the light differently. */
   bias?: [number, number];
+  /** The v2 homepage's warm colour balance, matched to its design. */
+  warm?: "landscape" | "portrait";
 };
 
-export function GradientField({ className = "", intensity = 1, bias = [0, 0], priority = false }: Props) {
+export function GradientField({ className = "", intensity = 1, bias = [0, 0], priority = false, warm }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -116,6 +140,7 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0], pr
       uRes: { value: new THREE.Vector2(1, 1) },
       uIntensity: { value: intensity },
       uBias: { value: new THREE.Vector2(bias[0], bias[1]) },
+      uWarm: { value: warm === "landscape" ? 1 : warm === "portrait" ? 2 : 0 },
     };
     const material = new THREE.ShaderMaterial({ vertexShader: vertex, fragmentShader: fragment, uniforms });
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
@@ -185,7 +210,7 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0], pr
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [intensity, bias[0], bias[1], priority]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [intensity, bias[0], bias[1], priority, warm]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div

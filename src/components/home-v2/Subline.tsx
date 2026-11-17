@@ -8,7 +8,7 @@ const SUBTLE = {
   lag: 0.18,
   offset: 10,
   fade: 0.5,
-  blur: 1.2,
+  blur: 0, // blurred echoes re-rasterise every frame; plain faint echoes look the same at this size
   tint: "#FE9004",
   mode: "both" as const,
   clickBurst: false,

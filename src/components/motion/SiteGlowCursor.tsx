@@ -94,7 +94,10 @@ export function SiteGlowCursor() {
       trailWidth={3}
       grain={0}
       clickBurst
-      quality="high"
+      // Performance: the fluid trail is soft, so it renders at 1x device pixels and medium simulation size.
+      // At 2x / high it was the page's biggest GPU load and made laptops heat up and throttle after a few minutes.
+      quality="medium"
+      maxDevicePixelRatio={1}
       theme={theme}
       className="pointer-events-none"
       style={{ position: "fixed", inset: 0, zIndex: 89 }}

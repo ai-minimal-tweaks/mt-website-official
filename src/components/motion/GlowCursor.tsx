@@ -2,6 +2,7 @@
  * GlowCursor — from React Bits (https://reactbits.dev/animations/glow-cursor), TS + Tailwind variant.
  * Copyright (c) 2026 David Haz. MIT + Commons Clause License Condition v1.0: free to use as part of this
  * website; the component itself may not be sold, sublicensed or redistributed on its own.
+ * Site change (performance): stops drawing while html[data-bg-pause] is set (intro gate, form pop-up).
  * Used unmodified; site wiring lives in ./SiteGlowCursor.tsx.
  */
 'use client';
@@ -917,6 +918,13 @@ const GlowCursor = ({
         applyResize();
       }
       if (!alive || !visible || document.hidden) return;
+      // Site change: nothing to draw while an overlay covers the page (intro gate, form pop-up).
+      if (document.documentElement.hasAttribute('data-bg-pause')) {
+        clearTargets();
+        blank();
+        last = 0;
+        return;
+      }
       const s = settingsRef.current;
       const dt = last ? Math.min(1 / 30, (now - last) / 1000) : 1 / 60;
       last = now;

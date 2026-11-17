@@ -18,6 +18,8 @@ const newsreader = Newsreader({
   weight: ["300", "400", "500", "600"],
   variable: "--font-newsreader",
   display: "swap",
+  // Only the classic pages use the serif; don't make the (v2) homepage download all ten files up front.
+  preload: false,
 });
 
 export const metadata: Metadata = {
