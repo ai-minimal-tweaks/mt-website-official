@@ -10,7 +10,16 @@ import { IMAGE_TYPES, MAX_VIDEO_BYTES, VIDEO_TYPES } from "@/lib/cms/media-types
  */
 export async function POST(req: Request) {
   if (!(await isSignedIn())) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return NextResponse.json({ error: "Blob storage isn't connected." }, { status: 503 });
+  // Browser uploads need the store's long-lived read-write token to sign upload tokens (OIDC alone can't).
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      {
+        error:
+          "Uploads need the Blob read-write token. In Vercel: Storage → your Blob store → Projects → ⋯ next to this project → Update Project Connection → tick “Add a read-write token env var to this connection”, then redeploy.",
+      },
+      { status: 503 },
+    );
+  }
 
   const body = (await req.json().catch(() => null)) as HandleUploadBody | null;
   if (!body || body.type !== "blob.generate-client-token") return NextResponse.json({ error: "Bad request." }, { status: 400 });

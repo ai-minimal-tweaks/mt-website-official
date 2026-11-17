@@ -8,7 +8,8 @@ import { slugify, type CaseStudy } from "@/content/case-studies";
 /**
  * Case-study store with two backends, chosen automatically:
  *
- *  • Vercel Blob, when BLOB_READ_WRITE_TOKEN is set (connect a Blob store to the Vercel project). Each save writes
+ *  • Vercel Blob, when a Blob store is connected to the Vercel project (BLOB_STORE_ID via OIDC, or
+ *    BLOB_READ_WRITE_TOKEN; the SDK picks the credential itself). Each save writes
  *    a new snapshot `cms/records/<time>-<random>.json`; reads use the newest one. Snapshot URLs are unique, so no
  *    CDN cache can serve stale content, and the last 20 snapshots double as a version history.
  *  • The local file /data/case-studies.json otherwise (local development, or a server with a writable disk).
@@ -25,13 +26,13 @@ const KEEP_SNAPSHOTS = 20;
 
 export type StorageMode = "blob" | "file" | "read-only";
 
-const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
+const useBlob = () => !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
 
 /** Raised when there is nowhere to save: no Blob store and a read-only disk (e.g. Vercel without Blob). */
 export class ReadOnlyStoreError extends Error {
   constructor() {
     super(
-      "This server can't save changes yet: connect a Vercel Blob store to the project (Vercel → Storage → Blob) and redeploy.",
+      "This server can't save changes yet: create a Public Blob store from the project's Storage page in Vercel, connect it to this project, and redeploy.",
     );
   }
 }

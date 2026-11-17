@@ -109,8 +109,9 @@ export function AdminShell({ children, storage }: { children: React.ReactNode; s
         <div className="relative px-3 pb-12 pt-4 sm:px-5">
           {storage === "read-only" && (
             <p role="alert" className="mx-auto mb-4 max-w-[90rem] rounded-md border border-[#f3c4c2] bg-[#fdecea] px-4 py-3 text-sm text-[#8a1c14]">
-              <strong>Saving is off on this server.</strong> Connect a Vercel Blob store to the project (Vercel → Storage → Create → Blob,
-              then connect it to this project) and redeploy. Until then you can view content but not save it.
+              <strong>Saving is off on this server.</strong> In Vercel, open this project → Storage → Create Storage → Blob, choose
+              Public access, tick “Add a read-write token env var to this connection”, create it, then redeploy. Until then you can view
+              content but not save it.
             </p>
           )}
           {children}
