@@ -10,9 +10,6 @@ export const nextSteps = [
   { title: "Proposal", body: "A clear scope, timeline and cost for the first phase." },
 ];
 
-/** Who receives website enquiries (override with the CONTACT_TO env var, comma-separated). */
-export const leadRecipients = ["anshul@minimaltweaks.com", "shubham@minimaltweaks.com"];
-
 /** The two homepage forms. "deck" asks for the credentials deck; "project" is a full project brief. */
 export type EnquiryKind = "project" | "deck";
 

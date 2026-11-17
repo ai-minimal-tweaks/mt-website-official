@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { buzz } from "./buzz";
 import { SuccessScene } from "./SuccessScene";
+import { pauseBackground } from "./pauseBackground";
 import TechText from "@/components/motion/TechText";
 import { useLenis } from "@/components/motion/MotionProvider";
 import { budgetOptions, serviceOptions, timelineOptions, type EnquiryKind } from "@/content/contact";
@@ -219,6 +220,10 @@ function Dialog({ kind, stepped, onClose }: { kind: EnquiryKind; stepped: boolea
     };
   }, [lenis, stepped]);
 
+  // The hero light behind the blurred backdrop stops drawing while the form is open (backdrop blur over a live
+  // WebGL canvas is one of the most expensive things a browser can composite).
+  useEffect(() => pauseBackground(), []);
+
   const close = () => {
     if (closing.current) return;
     closing.current = true;
@@ -424,6 +429,8 @@ function Dialog({ kind, stepped, onClose }: { kind: EnquiryKind; stepped: boolea
   return (
     <div
       ref={root}
+      // Lenis (smooth scrolling) otherwise swallows wheel/touch events, so the form couldn't scroll.
+      data-lenis-prevent
       className="fixed inset-0 z-[110] flex items-end justify-center sm:items-center"
       role="dialog"
       aria-modal="true"
@@ -495,6 +502,7 @@ function Dialog({ kind, stepped, onClose }: { kind: EnquiryKind; stepped: boolea
                 <>
                   <div data-f className="h-[4.6rem] w-[min(100%,26rem)] -translate-x-[1.1rem] text-ink" aria-hidden>
                     <TechText
+          sweep={false}
                       text={copy.title}
                       fontSize={64}
                       fontWeight={700}

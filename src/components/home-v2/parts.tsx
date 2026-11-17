@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { buzz } from "./buzz";
-import { LogoMark } from "@/components/ui";
+import { LogoLockup } from "@/components/ui";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=/<>";
 
@@ -39,7 +39,6 @@ export function ScrambleText({ text, play, className = "" }: { text: string; pla
 }
 
 export function TopBar({ tagline, play, compact = false }: { tagline: string; play: boolean; compact?: boolean }) {
-  const mark = useRef<HTMLSpanElement>(null);
   return (
     <header
       data-rise="down"
@@ -52,20 +51,10 @@ export function TopBar({ tagline, play, compact = false }: { tagline: string; pl
       {/* A warm light that slides along the bar under the cursor. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 w-64 -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(255,179,71,.35),transparent)] [left:var(--bx,-20rem)] transition-[left] duration-300 ease-out"
+        className="pointer-events-none absolute inset-y-0 left-0 w-64 bg-[radial-gradient(closest-side,rgba(255,179,71,.35),transparent)] transition-transform duration-300 ease-out [transform:translateX(calc(var(--bx,-20rem)-50%))]"
       />
-      <a
-        href="/"
-        className="relative flex items-center gap-3"
-        aria-label="Minimal Tweaks home"
-        onPointerEnter={() => gsap.fromTo(mark.current, { rotate: 0 }, { rotate: 360, duration: 0.9, ease: "expo.out" })}
-      >
-        <span ref={mark} className="inline-block">
-          <LogoMark className={compact ? "size-10" : "size-[3.1rem]"} />
-        </span>
-        <span className={`font-bold tracking-[-0.045em] text-ink ${compact ? "text-[1.2rem]" : "text-[1.6rem]"}`}>
-          Minimal Tweaks
-        </span>
+      <a href="/" className="relative flex items-center text-[#1A1A1A]" aria-label="Minimal Tweaks home">
+        <LogoLockup className={compact ? "h-9 w-auto" : "h-[2.6rem] w-auto lg:h-[2.9rem]"} />
       </a>
       <ScrambleText
         text={compact ? "Gurugram" : tagline}

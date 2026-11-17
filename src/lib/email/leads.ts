@@ -1,26 +1,15 @@
 import "server-only";
-import { leadRecipients, type ContactPayload } from "@/content/contact";
+import type { ContactPayload } from "@/content/contact";
+import { emailSettings } from "./config";
 
-/**
- * Emails a website enquiry through Resend's REST API (no SDK needed).
- * Configured by env vars: RESEND_API_KEY (required), CONTACT_FROM (a sender on a domain verified in Resend),
- * CONTACT_TO (optional comma-separated override of `leadRecipients`).
- */
+/** Emails a website enquiry through Resend's REST API (no SDK needed). Sender and recipients: ./config.ts. */
 
-export const emailConfigured = () => !!process.env.RESEND_API_KEY;
+export const emailConfigured = () => !!emailSettings().apiKey;
 
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 /** One line, no control characters: safe for a subject line. */
 const oneLine = (s: string) => s.replace(/[\u0000-\u001f\u007f]+/g, " ").trim();
-
-function recipients() {
-  const fromEnv = (process.env.CONTACT_TO ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  return fromEnv.length ? fromEnv : leadRecipients;
-}
 
 function render(lead: ContactPayload) {
   const title = lead.kind === "deck" ? "Deck request" : "New project enquiry";
@@ -56,16 +45,17 @@ ${filled
 
 /** Sends the lead. Throws when Resend rejects it, so the caller can tell the visitor. */
 export async function emailLead(lead: ContactPayload) {
+  const cfg = emailSettings();
   const { subject, text, html } = render(lead);
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${cfg.apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.CONTACT_FROM || "Minimal Tweaks Website <website@minimaltweaks.com>",
-      to: recipients(),
+      from: cfg.from,
+      to: cfg.to,
       reply_to: lead.email,
       subject,
       text,

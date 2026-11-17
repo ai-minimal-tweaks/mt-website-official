@@ -320,6 +320,14 @@ html.motion [data-hero-in] {
   image-rendering: pixelated;
 }
 
+/* Brands marquee (BrandsMarquee.tsx): the track holds two identical halves, so -50% loops seamlessly. */
+@keyframes brands-loop {
+  to { transform: translateX(calc(-50% - 0.5rem)); }
+}
+.marquee-fade {
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
 /* Form success scene (SuccessScene.tsx): flowing waves, rising bubbles, bobbing stickers. */
 @keyframes ss-wave {
   to { transform: translateX(-50%); }

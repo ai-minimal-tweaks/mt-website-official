@@ -7,6 +7,7 @@
 - **Temporary homepage (v2) is ON**: `HOMEPAGE` in `src/lib/pages.ts` picks `"v2"` (TV-static draw-an-M intro,
   `src/components/home-v2/`) or `"classic"` (the full homepage, `src/components/home/ClassicHome.tsx`). "Restore the
   old homepage" means setting it to `"classic"`. Details in the same doc.
-- Contact/deck forms post to `/api/contact`, which emails leads via Resend (env vars in `.env.example`).
+- Contact/deck forms post to `/api/contact`, which emails leads via Resend. Sender/recipients: `src/lib/email/config.ts`
+  (env overrides `CONTACT_FROM`, `CONTACT_TO`; key `RESEND_API_KEY`).
 - Case-study CMS at `/admin`; credentials and storage come from environment variables (see `.env.example`).
 - Never commit secrets. `.env*` files are git-ignored except `.env.example`.
