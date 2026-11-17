@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { buzz } from "./buzz";
+import { SuccessScene } from "./SuccessScene";
 import TechText from "@/components/motion/TechText";
 import { useLenis } from "@/components/motion/MotionProvider";
 import { budgetOptions, serviceOptions, timelineOptions, type EnquiryKind } from "@/content/contact";
@@ -328,19 +329,6 @@ function Dialog({ kind, stepped, onClose }: { kind: EnquiryKind; stepped: boolea
     }
   };
 
-  // Success screen animation.
-  useEffect(() => {
-    if (status !== "sent") return;
-    const ctx = gsap.context(() => {
-      gsap
-        .timeline({ defaults: { ease: "expo.out" } })
-        .fromTo("[data-done-tv]", { scaleY: 0.01, scaleX: 0.3 }, { scaleY: 1, scaleX: 1, duration: 0.7 })
-        .fromTo("[data-done-tick]", { strokeDashoffset: 40 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 0.35)
-        .from("[data-done-copy] > *", { y: 20, opacity: 0, duration: 0.7, stagger: 0.08 }, 0.4);
-    }, root);
-    return () => ctx.revert();
-  }, [status]);
-
   const block = (id: StepId) => {
     switch (id) {
       case "you":
@@ -457,52 +445,26 @@ function Dialog({ kind, stepped, onClose }: { kind: EnquiryKind; stepped: boolea
         {/* Ember glow that follows the pointer across the panel. */}
         <div aria-hidden className="enquiry-glow pointer-events-none absolute inset-0" />
 
-        <button
-          type="button"
-          onClick={close}
-          aria-label="Close"
-          className="absolute right-4 top-4 z-10 grid size-11 place-items-center rounded-full bg-[#efefee] text-ink transition hover:rotate-90 hover:bg-ink hover:text-white sm:right-6 sm:top-6"
-        >
-          <svg viewBox="0 0 16 16" className="size-4" aria-hidden>
-            <path d="M3.5 3.5l9 9m0-9-9 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
-        </button>
+        {status !== "sent" && (
+          <button
+            type="button"
+            onClick={close}
+            aria-label="Close"
+            className="absolute right-4 top-4 z-10 grid size-11 place-items-center rounded-full bg-[#efefee] text-ink transition hover:rotate-90 hover:bg-ink hover:text-white sm:right-6 sm:top-6"
+          >
+            <svg viewBox="0 0 16 16" className="size-4" aria-hidden>
+              <path d="M3.5 3.5l9 9m0-9-9 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
 
         {status === "sent" ? (
-          <div role="status" className="relative grid flex-1 place-items-center px-8 py-16 text-center sm:min-h-[30rem]">
-            <div>
-              <div
-                data-done-tv
-                className="mx-auto grid size-28 place-items-center rounded-[1.75rem] bg-ink shadow-[0_20px_60px_-15px_rgba(255,106,26,.7)]"
-              >
-                <svg viewBox="0 0 24 24" className="size-12 text-[#FE9004]" aria-hidden>
-                  <path
-                    data-done-tick
-                    d="M5 12.5 10 17.5 19 7"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeDasharray="40"
-                  />
-                </svg>
-              </div>
-              <div data-done-copy>
-                <h2 id="enquiry-title" className="mt-8 text-[2.2rem] font-bold tracking-[-0.04em]">
-                  {copy.done.title}
-                </h2>
-                <p className="mx-auto mt-3 max-w-sm text-ink/65">{copy.done.body}</p>
-                <button
-                  type="button"
-                  onClick={close}
-                  className="mt-8 h-12 rounded-xl bg-ink px-6 font-semibold text-white transition hover:bg-[#FE9004] hover:text-ink"
-                >
-                  Back to the site
-                </button>
-              </div>
-            </div>
-          </div>
+          <SuccessScene
+            kind={kind}
+            panel={panel}
+            backdrop={() => root.current?.querySelector("[data-backdrop]") ?? null}
+            onDone={onClose}
+          />
         ) : (
           <form onSubmit={submit} noValidate className="relative flex min-h-0 flex-1 flex-col">
             <div

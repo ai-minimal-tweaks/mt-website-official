@@ -21,11 +21,19 @@ export const forms = {
   project: {
     title: "Start a project",
     submit: "Start a project",
-    done: { title: "Signal received.", body: "Thanks — we’ll read your brief and get back to you within one working day." },
+    done: {
+      title: "Awesome, you’re in!",
+      body: "Your brief just landed with the crew. We’ll slide into your inbox in no time. Cheers ✌️",
+      tags: ["brief received ✓", "no cap, we’re on it", "cheers!"],
+    },
   },
   deck: {
     title: "Request Deck",
     submit: "Request Deck",
-    done: { title: "Deck incoming.", body: "Thanks — we’ll send our deck to your inbox shortly." },
+    done: {
+      title: "Deck’s on its way!",
+      body: "Awesome — keep an eye on your inbox, it’ll be there in no time. Cheers ✌️",
+      tags: ["request received ✓", "fresh from the oven", "cheers!"],
+    },
   },
 } as const;
