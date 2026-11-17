@@ -11,7 +11,7 @@ import { IntroGate } from "./IntroGate";
 import { HeroHeadline } from "./HeroHeadline";
 import { BrandsCarousel } from "./BrandsCarousel";
 import { EnquiryModal } from "./EnquiryModal";
-import { ArcadeButton, CtaButton, ScrambleText, TopBar } from "./parts";
+import { ArcadeButton, CtaButton, TopBar } from "./parts";
 import type { Pt } from "./recognizeM";
 
 type Phase = "gate" | "reveal" | "live";
@@ -226,8 +226,6 @@ function MiniFooter({ dark = false }: { dark?: boolean }) {
 
 /* ───────────────────────────────────────────────────────────── phones: "channels" */
 
-const CHANNELS = ["CH 01 · Tune in", "CH 02 · Brands", "CH 03 · Your move"];
-
 function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => void }) {
   const scroller = useRef<HTMLDivElement>(null);
   const hero = useRef<HTMLDivElement>(null);
@@ -303,10 +301,7 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
       ref={scroller}
       className="h-[100svh] snap-y snap-mandatory overflow-y-auto overscroll-none bg-white [scrollbar-width:none]"
     >
-      {/* Channel OSD + static burst */}
-      <div className="pointer-events-none fixed right-4 top-[5.6rem] z-30 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-[#7CFF8A] [text-shadow:0_0_8px_rgba(124,255,138,.7)]">
-        {CHANNELS[ch]}
-      </div>
+      {/* Static burst on channel change */}
       <div ref={zap} aria-hidden className="tv-zap pointer-events-none fixed inset-0 z-40 opacity-0" />
 
       {/* CH 01: the hero */}
@@ -362,58 +357,19 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
         <div className="relative mt-6 h-[44svh]">
           <BrandsCarousel play={play && ch >= 1} cardHeight={0.4} className="absolute inset-0" />
         </div>
-        <SwipeHint dark />
       </section>
 
-      {/* CH 03: final call */}
-      <section
-        data-channel={2}
-        aria-label="Start a project"
-        className="relative flex h-[100svh] snap-start flex-col justify-between overflow-hidden bg-ink px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-24 text-white"
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(90%_60%_at_80%_10%,rgba(255,106,26,.55),transparent_60%),radial-gradient(70%_50%_at_0%_100%,rgba(194,65,12,.5),transparent_60%)]"
-        />
-        <div className="relative">
-          <p className="font-mono text-[0.68rem] uppercase tracking-[0.25em] text-white/55">Final level</p>
-          <h2 className="mt-4 text-[3.4rem] font-bold leading-[0.9] tracking-[-0.055em]">
-            Your
-            <br />
-            <span className="text-[#FE9004]">move.</span>
-          </h2>
-          <p className="mt-4 max-w-[19rem] text-white/75">
-            Tell us what the brand needs next, or grab the deck and see how we work.
-          </p>
-        </div>
-        <div className="relative grid gap-4">
-          <ArcadeButton variant="ember" onClick={() => open("project")}>
-            {homeV2.ctas.project}
-          </ArcadeButton>
-          <ArcadeButton variant="glass" onClick={() => open("deck")}>
-            {homeV2.ctas.deck}
-          </ArcadeButton>
-          <div className="mt-4">
-            <ScrambleText
-              text={homeV2.tagline}
-              play={play && ch === 2}
-              className="font-mono text-[0.65rem] uppercase tracking-[0.25em] text-white/45"
-            />
-          </div>
-          <MiniFooter dark />
-        </div>
-      </section>
     </div>
   );
 }
 
-function SwipeHint({ dark = false }: { dark?: boolean }) {
+function SwipeHint() {
   return (
     <div
       aria-hidden
-      className={`flex items-center justify-center gap-2 pb-[env(safe-area-inset-bottom)] font-mono text-[0.6rem] uppercase tracking-[0.25em] ${dark ? "absolute inset-x-0 bottom-5 text-ink/45" : "text-ink/45"}`}
+      className="flex items-center justify-center gap-2 pb-[env(safe-area-inset-bottom)] font-mono text-[0.6rem] uppercase tracking-[0.25em] text-ink/45"
     >
-      <span className="motion-safe:animate-[swipe-up_1.6s_ease-in-out_infinite]">↑</span> Swipe for next channel
+      <span className="motion-safe:animate-[swipe-up_1.6s_ease-in-out_infinite]">↑</span> Swipe to see the brands
     </div>
   );
 }
