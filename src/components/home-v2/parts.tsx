@@ -42,7 +42,7 @@ export function TopBar({ tagline, play, compact = false }: { tagline: string; pl
   return (
     <header
       data-rise="down"
-      className={`relative flex items-center justify-between overflow-hidden bg-[#fdf1e6] ${compact ? "h-16 rounded-[1.25rem] px-5" : "h-[5.25rem] rounded-[1.1rem] px-[5%]"}`}
+      className={`relative flex items-center justify-between overflow-hidden bg-[#fdf1e6] ${compact ? "h-16 rounded-[1.25rem] px-4" : "h-[5.25rem] rounded-[1.1rem] px-6 lg:px-8"}`}
       onPointerMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--bx", `${e.clientX - r.left}px`);
@@ -115,9 +115,9 @@ export function CtaButton({
       ref={ref}
       type="button"
       onClick={onClick}
-      className={`cta-shimmer group relative flex h-[4.6rem] w-full min-w-[19rem] items-center justify-between gap-8 overflow-hidden rounded-[0.9rem] border px-8 text-[1.3rem] font-bold uppercase tracking-[-0.035em] text-white backdrop-blur-md transition-[border-color,box-shadow] duration-300 ${
+      className={`cta-shimmer group relative flex h-[4.6rem] w-full min-w-[19rem] items-center justify-between gap-8 overflow-hidden rounded-[0.9rem] border px-8 text-[1.3rem] font-bold uppercase tracking-[-0.035em] text-white transition-[border-color,box-shadow] duration-300 ${
         variant === "glass"
-          ? "border-white/45 bg-white/[0.07] hover:border-white/80 hover:shadow-[0_0_40px_-8px_rgba(255,255,255,.35)]"
+          ? "border-white/45 bg-white/[0.1] hover:border-white/80 hover:shadow-[0_0_40px_-8px_rgba(255,255,255,.35)]"
           : "border-[#ffb347]/80 bg-gradient-to-r from-[#3a1406]/90 via-[#a3400a]/90 to-[#ff7a1a]/95 hover:shadow-[0_0_50px_-6px_rgba(255,106,26,.75)]"
       }`}
     >
@@ -147,7 +147,7 @@ export function ArcadeButton({
       className={`cta-shimmer group relative flex h-16 w-full items-center justify-between overflow-hidden rounded-2xl px-6 text-[1.05rem] font-bold uppercase tracking-[-0.02em] transition-[transform,box-shadow] duration-100 active:translate-y-[6px] ${
         variant === "ember"
           ? "bg-gradient-to-r from-[#ff6a1a] to-[#FE9004] text-ink shadow-[0_7px_0_#8a2c04,0_20px_40px_-12px_rgba(255,106,26,.7)] active:shadow-[0_1px_0_#8a2c04]"
-          : "border border-white/40 bg-white/10 text-white backdrop-blur-md shadow-[0_7px_0_rgba(255,255,255,.18)] active:shadow-[0_1px_0_rgba(255,255,255,.18)]"
+          : "border border-white/40 bg-white/[0.13] text-white shadow-[0_7px_0_rgba(255,255,255,.18)] active:shadow-[0_1px_0_rgba(255,255,255,.18)]"
       }`}
     >
       <span className="relative">{children}</span>

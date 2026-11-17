@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { bodyTooLarge } from "@/lib/security/request";
 import { budgetOptions, serviceOptions, timelineOptions, type ContactPayload } from "@/content/contact";
-import { emailConfigured, emailLead } from "@/lib/email/leads";
+import { EmailError, emailConfigured, emailLead } from "@/lib/email/leads";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const clip = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -69,7 +69,10 @@ export async function POST(req: Request) {
       : Promise.reject(new Error("off")),
   ]);
   if (!deliveries.some((d) => d.status === "fulfilled")) {
-    return NextResponse.json({ error: "We couldn't send that just now." }, { status: 502 });
+    const emailFailure = emailConfigured() && deliveries[0].status === "rejected" ? deliveries[0].reason : null;
+    // A short machine-readable code (e.g. "resend_403_validation_error") helps diagnose delivery from the browser.
+    const code = emailFailure instanceof EmailError ? emailFailure.message : emailFailure ? "email_unreachable" : undefined;
+    return NextResponse.json({ error: "We couldn't send that just now.", code }, { status: 502 });
   }
   return NextResponse.json({ ok: true });
 }

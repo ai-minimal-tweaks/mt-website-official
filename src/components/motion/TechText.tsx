@@ -780,7 +780,7 @@ const TechText = ({
         sizeDirty = false;
         width = Math.max(1, container.clientWidth);
         height = Math.max(1, container.clientHeight);
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        dpr = Math.min(window.devicePixelRatio || 1, 1.5); // site change: 1.5x is sharp at headline sizes, ~45% fewer pixels
         const pixelWidth = Math.round(width * dpr);
         const pixelHeight = Math.round(height * dpr);
         if (canvas.width !== pixelWidth) canvas.width = pixelWidth;

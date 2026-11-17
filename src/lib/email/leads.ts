@@ -43,6 +43,8 @@ ${filled
   return { subject, text, html };
 }
 
+export class EmailError extends Error {}
+
 /** Sends the lead. Throws when Resend rejects it, so the caller can tell the visitor. */
 export async function emailLead(lead: ContactPayload) {
   const cfg = emailSettings();
@@ -65,7 +67,14 @@ export async function emailLead(lead: ContactPayload) {
   });
   if (!res.ok) {
     // Logged server-side only (Vercel logs); the visitor gets a generic message.
-    console.error("[contact] Resend rejected the email:", res.status, (await res.text().catch(() => "")).slice(0, 500));
-    throw new Error("email failed");
+    const body = (await res.text().catch(() => "")).slice(0, 500);
+    console.error("[contact] Resend rejected the email:", res.status, body);
+    // Resend's error type (e.g. "validation_error", "invalid_from_address") is safe to surface for diagnosis;
+    // the message stays in the server log.
+    let kind = "unknown";
+    try {
+      kind = String(JSON.parse(body).name ?? kind).replace(/[^\w-]/g, "").slice(0, 60) || kind;
+    } catch {}
+    throw new EmailError(`resend_${res.status}_${kind}`);
   }
 }

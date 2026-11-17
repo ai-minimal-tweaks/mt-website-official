@@ -25,9 +25,13 @@ function Card({ name, live, compact }: { name: string; live: boolean; compact: b
  * soft fade at both edges. The list is doubled so it's always wider than the screen, then doubled again for the loop.
  */
 export function BrandsMarquee({ compact = false }: { compact?: boolean }) {
+  const fade = compact ? "from-[#fdf1e6]" : "from-white";
   const set = [...homeV2.brands, ...homeV2.brands];
   return (
-    <div className="marquee-fade group relative overflow-hidden py-2">
+    <div className="group relative overflow-hidden py-2">
+      {/* Edge fades as plain overlays: a CSS mask over a moving track is re-composited every frame. */}
+      <div aria-hidden className={`pointer-events-none absolute inset-y-0 left-0 z-10 w-[6%] bg-gradient-to-r ${fade} to-transparent`} />
+      <div aria-hidden className={`pointer-events-none absolute inset-y-0 right-0 z-10 w-[6%] bg-gradient-to-l ${fade} to-transparent`} />
       <ul
         aria-hidden
         className="flex w-max gap-4 motion-safe:animate-[brands-loop_linear_infinite] group-hover:[animation-play-state:paused]"

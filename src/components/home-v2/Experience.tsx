@@ -80,7 +80,7 @@ export function Experience() {
       <h1 className="sr-only">Creative work needs minimal tweaks. {homeV2.sub}</h1>
       <div ref={world}>{mobile ? <PhoneHome play={play} open={open} /> : <DesktopHome play={play} open={open} />}</div>
       {gate && <IntroGate onTuned={onTuned} onGone={() => setGate(false)} />}
-      <EnquiryModal kind={form} stepped={mobile} onClose={() => setForm(null)} />
+      <EnquiryModal kind={form} onClose={() => setForm(null)} />
       {/* Without JavaScript there's nothing to draw with: show the page. */}
       <noscript>
         <style>{"[data-intro-gate]{display:none!important}"}</style>
@@ -93,6 +93,7 @@ export function Experience() {
 
 function DesktopHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => void }) {
   const hero = useRef<HTMLElement>(null);
+  const spot = useRef<HTMLDivElement>(null);
 
   // The hero card turns gently toward the cursor and a spotlight follows it.
   useEffect(() => {
@@ -111,8 +112,8 @@ function DesktopHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => 
       const r = el.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width;
       const py = (e.clientY - r.top) / r.height;
-      el.style.setProperty("--sx", `${px * 100}%`);
-      el.style.setProperty("--sy", `${py * 100}%`);
+      // Spotlight: a small layer moved by transform (compositor only), not a repainted full-size gradient.
+      spot.current?.style.setProperty("transform", `translate3d(${e.clientX - r.left}px, ${e.clientY - r.top}px, 0)`);
       rx((0.5 - py) * 3);
       ry((px - 0.5) * 4);
     };
@@ -134,13 +135,12 @@ function DesktopHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => 
         aria-label="Introduction"
         className="relative isolate flex min-h-[26rem] flex-[1_1_0] items-center overflow-hidden rounded-[1.75rem] bg-ink text-white"
       >
-        <GradientField priority />
-        {/* Warmth to match the design: an orange sky on the right third, a red-brown middle, a low ember glow. Screen
-            blend keeps the moving WebGL light visible underneath. Static CSS, so it costs nothing per frame. */}
-        <div aria-hidden className="hero-warmth pointer-events-none absolute inset-0 mix-blend-screen" />
+        <GradientField priority warm="landscape" />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(28rem_circle_at_var(--sx,70%)_var(--sy,40%),rgba(255,179,71,.16),transparent_70%)]"
+          ref={spot}
+          className="pointer-events-none absolute left-[-28rem] top-[-28rem] size-[56rem] bg-[radial-gradient(closest-side,rgba(255,179,71,.16),transparent)] will-change-transform"
+          style={{ transform: "translate3d(70%, 40%, 0)" }}
         />
         <div
           aria-hidden
@@ -234,6 +234,7 @@ function MiniFooter({ dark = false }: { dark?: boolean }) {
 function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => void }) {
   const scroller = useRef<HTMLDivElement>(null);
   const hero = useRef<HTMLDivElement>(null);
+  const spot = useRef<HTMLDivElement>(null);
   const zap = useRef<HTMLDivElement>(null);
   const [ch, setCh] = useState(0);
 
@@ -288,8 +289,7 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
     };
     const touch = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
-      el.style.setProperty("--sx", `${((e.clientX - r.left) / r.width) * 100}%`);
-      el.style.setProperty("--sy", `${((e.clientY - r.top) / r.height) * 100}%`);
+      spot.current?.style.setProperty("transform", `translate3d(${e.clientX - r.left}px, ${e.clientY - r.top}px, 0)`);
     };
     addEventListener("deviceorientation", orient);
     el.addEventListener("pointermove", touch);
@@ -320,11 +320,12 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
           ref={hero}
           className="relative isolate flex flex-1 flex-col justify-end overflow-hidden rounded-[1.25rem] bg-ink px-5 pb-[calc(1.25rem+7px)] text-white"
         >
-          <GradientField priority />
-          <div aria-hidden className="hero-warmth hero-warmth--portrait pointer-events-none absolute inset-0 mix-blend-screen" />
+          <GradientField priority warm="portrait" />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(16rem_circle_at_var(--sx,70%)_var(--sy,30%),rgba(255,179,71,.22),transparent_70%)]"
+            ref={spot}
+            className="pointer-events-none absolute left-[-16rem] top-[-16rem] size-[32rem] bg-[radial-gradient(closest-side,rgba(255,179,71,.22),transparent)] will-change-transform"
+            style={{ transform: "translate3d(70vw, 30vh, 0)" }}
           />
           <div
             aria-hidden
