@@ -9,7 +9,7 @@ const dev = process.env.NODE_ENV !== "production";
  *    statically generated pages (nonces would force every page to render on demand); dev also needs 'unsafe-eval'.
  *  • images/video: any https source, because CMS editors may paste media URLs from other hosts.
  *  • frames: YouTube (no-cookie) and Vimeo players in case studies, plus GTM's noscript frame.
- *  • connect: Vercel Blob client uploads from the CMS, and Google Analytics beacons.
+ *  • connect: any https (analytics and ad beacons go to many Google domains; CMS uploads go to Vercel Blob).
  */
 const csp = [
   "default-src 'self'",
@@ -18,7 +18,10 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self'${dev ? " ws:" : ""} https://vercel.com/api/blob https://*.blob.vercel-storage.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com https://www.googleadservices.com https://*.doubleclick.net https://pagead2.googlesyndication.com https://*.clarity.ms`,
+  // connect: any https endpoint. Google Ads reports conversions to the visitor's country domain (google.co.in,
+  // google.co.uk, …) and GA4 to analytics.google.com, so a host list can't be complete. Script execution stays
+  // locked down by script-src above, which is what stops injected code.
+  `connect-src 'self' https:${dev ? " ws:" : ""}`,
   "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.googletagmanager.com https://*.doubleclick.net",
   "worker-src 'self' blob:",
   "object-src 'none'",
