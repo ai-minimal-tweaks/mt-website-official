@@ -5,7 +5,13 @@ const str = (v: unknown, max = 5000) => (typeof v === "string" ? v.trim().slice(
 /** Media sources: absolute http(s) URLs or files served by our media route. */
 const src = (v: unknown) => {
   const s = str(v, 2000);
-  return /^https?:\/\//i.test(s) || s.startsWith("/api/media/") || s.startsWith("/images/") ? s : "";
+  // https only (no http:, javascript:, data: …), or our own paths.
+  if (s.startsWith("/api/media/") || s.startsWith("/images/")) return /^[\w/.-]+$/.test(s) && !s.includes("..") ? s : "";
+  try {
+    return new URL(s).protocol === "https:" ? s : "";
+  } catch {
+    return "";
+  }
 };
 
 function blocks(v: unknown): Block[] {

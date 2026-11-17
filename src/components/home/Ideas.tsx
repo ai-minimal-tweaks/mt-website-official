@@ -47,7 +47,7 @@ export function Ideas() {
     gsap.to(e.currentTarget, { rotateY: 0, rotateX: 0, y: 0, duration: 0.9, ease: "elastic.out(1, 0.6)" });
 
   return (
-    <section ref={root} className="relative isolate overflow-hidden bg-ink py-20 text-white sm:py-28" aria-labelledby="ideas-title">
+    <section ref={root} id="ideas" className="relative isolate scroll-mt-24 overflow-hidden bg-ink py-20 text-white sm:py-28" aria-labelledby="ideas-title">
       <GradientField bias={[0.05, 0.22]} intensity={0.95} />
       <div aria-hidden className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink to-transparent" />
 

@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { testimonials } from "@/content/home";
-import { Chevron, SectionHeading } from "@/components/ui";
+import { Chevron, SectionHeading, SmartLink } from "@/components/ui";
 import { ProjectArt } from "./ProjectArt";
 
 export function Testimonials() {
@@ -34,7 +33,7 @@ export function Testimonials() {
   };
 
   return (
-    <section className="overflow-hidden py-16 sm:py-24" aria-labelledby="testimonials-title" aria-roledescription="carousel">
+    <section id="testimonials" className="scroll-mt-24 overflow-hidden py-16 sm:py-24" aria-labelledby="testimonials-title" aria-roledescription="carousel">
       <div className="container-site">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div id="testimonials-title">
@@ -105,7 +104,7 @@ export function Testimonials() {
                 <i className="size-1.5 rounded-full bg-ink" /> Results
               </span>
               <p className="mt-4 text-[0.82rem] leading-relaxed text-ink/75">{t.result.summary}</p>
-              <Link href={t.result.href} className="group mt-6 flex items-center gap-3 rounded-xl bg-white p-2 pr-4 md:mt-auto">
+              <SmartLink href={t.result.href} className="group mt-6 flex items-center gap-3 rounded-xl bg-white p-2 pr-4 md:mt-auto">
                 <span className="relative block size-16 shrink-0 overflow-hidden rounded-lg">
                   <ProjectArt art={t.result.art} />
                 </span>
@@ -116,7 +115,7 @@ export function Testimonials() {
                     <Chevron className="size-4 -rotate-90 transition-transform group-hover:translate-x-1" />
                   </span>
                 </span>
-              </Link>
+              </SmartLink>
             </div>
           </article>
         ))}

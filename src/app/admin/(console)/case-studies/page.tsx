@@ -6,10 +6,11 @@ import { CaseStudyList } from "@/components/admin/CaseStudyList";
 export const metadata: Metadata = { title: "Case Studies" };
 export const dynamic = "force-dynamic";
 
-export default function CaseStudiesPage() {
+export default async function CaseStudiesPage() {
+  const records = await listAll();
   return (
     <Suspense>
-      <CaseStudyList initial={listAll()} />
+      <CaseStudyList initial={records} />
     </Suspense>
   );
 }

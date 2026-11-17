@@ -8,8 +8,8 @@ import { RelativeTime } from "@/components/admin/RelativeTime";
 export const metadata: Metadata = { title: "Home" };
 export const dynamic = "force-dynamic";
 
-export default function AdminHome() {
-  const all = listAll();
+export default async function AdminHome() {
+  const all = await listAll();
   const published = all.filter((c) => c.status === "published");
   const recent = [...all].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 6);
   const kpis = [

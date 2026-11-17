@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import { categories, caseStudyHref, slugify, type Block, type CaseStudy, type Category } from "@/content/case-studies";
 import { Badge, Button, Card, Field, Icon, IconTile, Modal, Toggle, inputCls, useToast } from "./ui";
 import { RelativeTime } from "./RelativeTime";
+import { upload as blobUpload } from "@vercel/blob/client";
+import { useStorageMode } from "./AdminShell";
+import type { StorageMode } from "@/lib/cms/store";
+import { IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_VIDEO_BYTES, VIDEO_TYPES } from "@/lib/cms/media-types";
 
 /* ------------------------------------------------------------------------------------------------
  * Form model. Text lives in the four page sections; media is edited separately and written back so the
@@ -135,7 +139,28 @@ function toPayload(f: Form) {
 
 /* ------------------------------------------------------------------------------------------------ */
 
-async function upload(file: File): Promise<{ url?: string; error?: string }> {
+async function upload(file: File, storage: StorageMode): Promise<{ url?: string; error?: string }> {
+  const isVideo = file.type.startsWith("video/");
+  if (![...IMAGE_TYPES, ...VIDEO_TYPES].includes(file.type)) return { error: "Use a JPG, PNG, WebP, GIF, AVIF, MP4, WebM or MOV file." };
+  const max = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+  if (file.size > max) return { error: `File is larger than ${max / 1024 / 1024} MB.` };
+
+  if (storage === "blob") {
+    // Straight from the browser to Vercel Blob; the server only signs a short-lived token for signed-in admins.
+    try {
+      const safeName = file.name.toLowerCase().replace(/[^a-z0-9.-]+/g, "-").replace(/^-+|-+$/g, "").slice(-80) || "file";
+      const blob = await blobUpload(`cms/uploads/${safeName}`, file, {
+        access: "public",
+        handleUploadUrl: "/api/cms/blob-upload",
+        contentType: file.type,
+        multipart: file.size > 20 * 1024 * 1024,
+      });
+      return { url: blob.url };
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : "Upload failed." };
+    }
+  }
+
   const body = new FormData();
   body.append("file", file);
   const res = await fetch("/api/cms/upload", { method: "POST", body }).catch(() => null);
@@ -162,12 +187,13 @@ function Thumb({ src, video }: { src: string; video?: boolean }) {
 /** URL input + upload button + preview, for images or videos. */
 function MediaInput({ value, onChange, kind, placeholder }: { value: string; onChange: (v: string) => void; kind: "image" | "video"; placeholder?: string }) {
   const toast = useToast();
+  const storage = useStorageMode();
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const pick = async (file?: File) => {
     if (!file) return;
     setBusy(true);
-    const { url, error } = await upload(file);
+    const { url, error } = await upload(file, storage);
     setBusy(false);
     if (url) onChange(url);
     else toast({ tone: "error", title: "Upload failed", body: error });

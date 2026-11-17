@@ -5,7 +5,8 @@ import { Footer } from "@/components/layout/Footer";
 import { CtaBand, PageHero } from "@/components/shared";
 import { Arrow, SectionHeading } from "@/components/ui";
 import { caseStudyHref } from "@/content/case-studies";
-import { getCaseStudy } from "@/lib/cms/store";
+import { getCaseStudies } from "@/lib/cms/store";
+import type { CaseStudy } from "@/content/case-studies";
 import { testimonials, trustedBrands, type Testimonial } from "@/content/testimonials";
 import { site } from "@/lib/site";
 
@@ -35,9 +36,11 @@ function Author({ t }: { t: Testimonial }) {
   );
 }
 
-export default function TestimonialsPage() {
+export default async function TestimonialsPage() {
   const [featured, ...rest] = testimonials;
-  const featuredCase = featured.caseSlug ? getCaseStudy(featured.caseSlug) : undefined;
+  const studies = await getCaseStudies();
+  const findStudy = (slug?: string) => (slug ? studies.find((c) => c.slug === slug) : undefined);
+  const featuredCase = findStudy(featured.caseSlug);
 
   return (
     <>
@@ -96,7 +99,7 @@ export default function TestimonialsPage() {
           {/* CSS columns give the design's masonry without JS */}
           <div data-anim="stagger" className="mt-10 gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
             {rest.slice(0, 3).map((t) => (
-              <Quote key={t.name} t={t} />
+              <Quote key={t.name} t={t} study={findStudy(t.caseSlug)} />
             ))}
             <a
               data-anim-item
@@ -118,7 +121,7 @@ export default function TestimonialsPage() {
               </span>
             </a>
             {rest.slice(3).map((t) => (
-              <Quote key={t.name} t={t} />
+              <Quote key={t.name} t={t} study={findStudy(t.caseSlug)} />
             ))}
           </div>
         </section>
@@ -147,8 +150,7 @@ export default function TestimonialsPage() {
   );
 }
 
-function Quote({ t }: { t: Testimonial }) {
-  const study = t.caseSlug ? getCaseStudy(t.caseSlug) : undefined;
+function Quote({ t, study }: { t: Testimonial; study?: CaseStudy }) {
   return (
     <figure data-anim-item className="mb-4 break-inside-avoid rounded-[1.25rem] bg-mist p-6">
       <span className="rounded-md bg-white px-2 py-0.5 text-[0.65rem] font-semibold">★ 5.0</span>

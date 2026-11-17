@@ -27,6 +27,11 @@ export function EmberRing({ className = "" }: { className?: string }) {
     renderer.domElement.className = "absolute inset-0 size-full";
     renderer.domElement.setAttribute("aria-hidden", "true");
     host.appendChild(renderer.domElement);
+    // GPU context lost (memory pressure on phones): hide the canvas rather than leave a broken frame.
+    renderer.domElement.addEventListener("webglcontextlost", (e) => {
+      e.preventDefault();
+      renderer.domElement.style.display = "none";
+    });
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);

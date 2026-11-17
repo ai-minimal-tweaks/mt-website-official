@@ -1,5 +1,8 @@
 import Link from "next/link";
-import type { SocialKey } from "@/lib/site";
+import { site, type SocialKey } from "@/lib/site";
+import { resolveHref } from "@/lib/pages";
+
+const discoveryCallHref = `mailto:${site.email}?subject=${encodeURIComponent("Book a discovery call")}`;
 
 type PillProps = {
   href: string;
@@ -20,7 +23,11 @@ const variants = {
 };
 
 /** Rounded pill CTA used across the site. Uppercase label + arrow, per the design. */
-export function Pill({ href, children, variant = "dark", size = "md", external, className = "" }: PillProps) {
+export function Pill({ href: rawHref, children, variant = "dark", size = "md", external, className = "" }: PillProps) {
+  // One-pager mode (src/lib/pages.ts): links to hidden pages go to their homepage section; with no section, no button.
+  const href = external ? rawHref : resolveHref(rawHref, { discoveryCall: discoveryCallHref });
+  if (!href) return null;
+  const isMail = href.startsWith("mailto:");
     // No `transition-all`: the magnetic pull animates transform from JS, and a CSS transform transition would fight it.
   const cls = `group inline-flex items-center justify-center gap-2 rounded-full font-sans font-semibold uppercase tracking-[0.06em] transition-[background-color,color,border-color,box-shadow,filter,scale] duration-300 ease-out-expo active:scale-[0.97] ${
     size === "sm" ? "h-9 px-4 text-[0.66rem]" : "h-12 px-6 text-[0.72rem]"
@@ -31,14 +38,29 @@ export function Pill({ href, children, variant = "dark", size = "md", external, 
       <Arrow className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
     </>
   );
-  return external ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cls} data-magnetic>
+  return external || isMail ? (
+    <a href={href} {...(external && { target: "_blank", rel: "noopener noreferrer" })} className={cls} data-magnetic>
       {inner}
     </a>
   ) : (
     <Link href={href} className={cls} data-magnetic>
       {inner}
     </Link>
+  );
+}
+
+/**
+ * A Link that respects one-pager mode: a hidden page becomes its homepage section, or, when it has none
+ * (e.g. a case study), the content renders as a plain <div> with the same styling and no link.
+ */
+export function SmartLink({ href, children, ...rest }: { href: string; children: React.ReactNode } & Omit<React.HTMLAttributes<HTMLElement>, "href"> & Record<`data-${string}`, unknown>) {
+  const to = resolveHref(href);
+  return to ? (
+    <Link href={to} {...rest}>
+      {children}
+    </Link>
+  ) : (
+    <div {...rest}>{children}</div>
   );
 }
 

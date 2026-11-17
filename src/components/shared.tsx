@@ -68,7 +68,7 @@ export function PageHero({
         data-anim="shell"
         className={`relative isolate overflow-hidden rounded-[1.5rem] bg-ink text-white will-change-transform sm:rounded-shell ${className}`}
       >
-        <GradientField bias={bias} />
+        <GradientField bias={bias} priority />
         <HeroScene side={align === "left" ? "right" : "both"} />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,rgba(0,0,0,.35),transparent_70%)]" />
         <div className={`container-site relative z-10 pb-16 pt-32 sm:pb-20 sm:pt-40 ${align === "center" ? "text-center" : ""}`}>{children}</div>

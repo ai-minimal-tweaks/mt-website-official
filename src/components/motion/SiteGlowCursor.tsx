@@ -27,8 +27,8 @@ function isDarkAt(x: number, y: number) {
 }
 
 /**
- * Site-wide ember glow trail behind the mouse (React Bits "Glow Cursor", ember preset: #ffb347 → #ff3b1a,
- * linger 1.1). A fixed, click-through overlay above the page. Over dark surfaces it glows with a screen blend;
+ * Site-wide ember glow trail behind the mouse (React Bits "Glow Cursor", theme colours #ffb347 → #ff3b1a; a soft,
+ * short trail: intensity 0.55, glow 0.1, hotspot 0, follow speed 0.75, linger 0.5). A fixed, click-through overlay above the page. Over dark surfaces it glows with a screen blend;
  * over light ones it switches to the component's light theme (ember ink), so the trail reads everywhere.
  * Mouse and trackpad only — touch devices and reduced-motion users never mount it.
  */
@@ -85,12 +85,13 @@ export function SiteGlowCursor() {
       aria-hidden
       color="#ffb347"
       secondaryColor="#ff3b1a"
-      linger={1.1}
-      intensity={1.3}
+      // React Bits settings requested for the site: intensity 0.55, glow 0.1, hotspot 0, followSpeed 0.75, linger 0.5.
+      intensity={0.55}
+      glow={0.1}
+      hotspot={0}
+      followSpeed={0.75}
+      linger={0.5}
       trailWidth={3}
-      glow={1.2}
-      hotspot={0.8}
-      followSpeed={0.6}
       grain={0}
       clickBurst
       quality="high"

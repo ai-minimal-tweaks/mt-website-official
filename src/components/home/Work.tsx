@@ -6,7 +6,8 @@ import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 import { useGSAP } from "@gsap/react";
 import { industries, projects, serviceTags, type ServiceTag } from "@/content/home";
-import { Arrow, Chevron, SectionHeading } from "@/components/ui";
+import { Arrow, Chevron, SectionHeading, SmartLink } from "@/components/ui";
+import { isHiddenPage, resolveHref } from "@/lib/pages";
 import { ProjectArt } from "./ProjectArt";
 
 gsap.registerPlugin(Flip, useGSAP);
@@ -53,7 +54,7 @@ export function Work() {
   };
 
   return (
-    <section className="py-16 sm:py-24" aria-labelledby="work-title">
+    <section id="work" className="scroll-mt-24 py-16 sm:py-24" aria-labelledby="work-title">
       <div className="container-site">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeading lead="A Peek at What" accent="We've Been Up To" />
@@ -104,7 +105,7 @@ export function Work() {
           <div className="min-w-0">
             <div ref={gridRef} data-anim="stagger" className="grid gap-5 sm:grid-cols-2" aria-live="polite">
               {visible.map((p) => (
-                <Link
+                <SmartLink
                   key={p.slug}
                   href={p.href}
                   data-card
@@ -126,27 +127,33 @@ export function Work() {
                       </h3>
                       <p className="mt-1.5 text-[0.8rem] leading-snug text-subtle">{p.summary}</p>
                     </div>
-                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-ink transition-all duration-500 ease-out-expo group-hover:rotate-45 group-hover:bg-ink group-hover:text-white">
-                      <Arrow className="size-3.5" />
-                    </span>
+                    {resolveHref(p.href) && (
+                      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-ink transition-all duration-500 ease-out-expo group-hover:rotate-45 group-hover:bg-ink group-hover:text-white">
+                        <Arrow className="size-3.5" />
+                      </span>
+                    )}
                   </div>
-                </Link>
+                </SmartLink>
               ))}
             </div>
             {visible.length === 0 && (
               <div className="grid place-items-center rounded-card border border-dashed border-line py-20 text-center">
                 <p className="font-serif text-lg text-subtle">No featured projects for this filter yet.</p>
-                <Link href="/work" className="mt-3 text-sm font-semibold text-flame underline-offset-4 hover:underline">
-                  Browse all case studies
+                {!isHiddenPage("/work") && (
+                  <Link href="/work" className="mt-3 text-sm font-semibold text-flame underline-offset-4 hover:underline">
+                    Browse all case studies
+                  </Link>
+                )}
+              </div>
+            )}
+            {!isHiddenPage("/work") && (
+              <div className="mt-8 flex justify-center lg:justify-start">
+                <Link href="/work" className="group inline-flex items-center gap-2 text-sm font-semibold">
+                  View all work
+                  <Arrow className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </div>
             )}
-            <div className="mt-8 flex justify-center lg:justify-start">
-              <Link href="/work" className="group inline-flex items-center gap-2 text-sm font-semibold">
-                View all work
-                <Arrow className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
-            </div>
           </div>
         </div>
       </div>

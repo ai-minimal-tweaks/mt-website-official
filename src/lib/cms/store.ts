@@ -2,115 +2,172 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { list, put, del } from "@vercel/blob";
 import { slugify, type CaseStudy } from "@/content/case-studies";
 
 /**
- * File-backed store for case studies. No database: records live in /data/case-studies.json and uploads in
- * /data/uploads. Works wherever the Node server has a writable disk (local dev, `next start` on a VM).
- * Serverless hosts with read-only file systems (e.g. Vercel) would need a real store behind this module.
+ * Case-study store with two backends, chosen automatically:
+ *
+ *  • Vercel Blob, when a Blob store is connected to the Vercel project (BLOB_STORE_ID via OIDC, or
+ *    BLOB_READ_WRITE_TOKEN; the SDK picks the credential itself). Each save writes
+ *    a new snapshot `cms/records/<time>-<random>.json`; reads use the newest one. Snapshot URLs are unique, so no
+ *    CDN cache can serve stale content, and the last 20 snapshots double as a version history.
+ *  • The local file /data/case-studies.json otherwise (local development, or a server with a writable disk).
+ *
+ * The file in /data is also the seed: until the first CMS save on Vercel, the site reads the bundled file.
  */
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const FILE = path.join(DATA_DIR, "case-studies.json");
 export const UPLOAD_DIR = path.join(DATA_DIR, "uploads");
 
-function readAll(): CaseStudy[] {
-  return JSON.parse(fs.readFileSync(FILE, "utf8")) as CaseStudy[];
-}
+const SNAPSHOT_PREFIX = "cms/records/";
+const KEEP_SNAPSHOTS = 20;
 
-/** Raised when the host's file system cannot be written (e.g. Vercel serverless functions). */
+export type StorageMode = "blob" | "file" | "read-only";
+
+const useBlob = () => !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
+
+/** Raised when there is nowhere to save: no Blob store and a read-only disk (e.g. Vercel without Blob). */
 export class ReadOnlyStoreError extends Error {
   constructor() {
     super(
-      "This server can't save changes: its file system is read-only (for example on Vercel). Edit locally and redeploy, or connect a database or storage service.",
+      "This server can't save changes yet: create a Public Blob store from the project's Storage page in Vercel, connect it to this project, and redeploy.",
     );
   }
 }
 
 const isReadOnly = (e: unknown) => ["EROFS", "EACCES", "EPERM"].includes((e as NodeJS.ErrnoException)?.code ?? "");
 
-function writeAll(list: CaseStudy[]) {
+/** Where saves go right now (shown in the CMS). */
+export function storageMode(): StorageMode {
+  if (useBlob()) return "blob";
+  return process.env.VERCEL ? "read-only" : "file";
+}
+
+/* ---------------------------------------------------------------- reading */
+
+function readFile(): CaseStudy[] {
+  return JSON.parse(fs.readFileSync(FILE, "utf8")) as CaseStudy[];
+}
+
+async function latestSnapshots() {
+  const blobs = [];
+  let cursor: string | undefined;
+  do {
+    const page = await list({ prefix: SNAPSHOT_PREFIX, cursor, limit: 1000 });
+    blobs.push(...page.blobs);
+    cursor = page.hasMore ? page.cursor : undefined;
+  } while (cursor);
+  return blobs.sort((a, b) => +new Date(b.uploadedAt) - +new Date(a.uploadedAt));
+}
+
+async function readAll(): Promise<CaseStudy[]> {
+  if (!useBlob()) return readFile();
+  const [newest] = await latestSnapshots();
+  if (!newest) return readFile(); // nothing saved from the CMS yet: use the bundled seed
+  const res = await fetch(newest.url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Could not read CMS records (${res.status}).`);
+  return (await res.json()) as CaseStudy[];
+}
+
+/* ---------------------------------------------------------------- writing */
+
+async function writeAll(records: CaseStudy[]) {
+  const json = JSON.stringify(records, null, 2) + "\n";
+  if (useBlob()) {
+    await put(`${SNAPSHOT_PREFIX}${Date.now()}.json`, json, {
+      access: "public",
+      addRandomSuffix: true, // unguessable URL: drafts are not discoverable
+      contentType: "application/json",
+      cacheControlMaxAge: 60,
+    });
+    // Keep a short history; older snapshots are removed.
+    const old = (await latestSnapshots()).slice(KEEP_SNAPSHOTS);
+    if (old.length) await del(old.map((b) => b.url)).catch(() => {});
+    return;
+  }
   try {
-    writeFile(list);
+    // Temp file + rename, so a crash mid-write never leaves a half-written JSON file.
+    const tmp = `${FILE}.${process.pid}.tmp`;
+    fs.writeFileSync(tmp, json);
+    fs.renameSync(tmp, FILE);
   } catch (e) {
     if (isReadOnly(e)) throw new ReadOnlyStoreError();
     throw e;
   }
 }
 
-function writeFile(list: CaseStudy[]) {
-  // Write to a temp file and rename, so a crash mid-write never leaves a half-written JSON file.
-  const tmp = `${FILE}.${process.pid}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(list, null, 2) + "\n");
-  fs.renameSync(tmp, FILE);
-}
+/* ---------------------------------------------------------------- queries */
 
 /** Every record, drafts included, in /work order. */
 export const listAll = () => readAll();
 
 /** Published records only, in /work order: what the public site shows. */
-export const getCaseStudies = () => readAll().filter((c) => c.status === "published");
+export const getCaseStudies = async () => (await readAll()).filter((c) => c.status === "published");
 
-export const getCaseStudy = (slug: string) => getCaseStudies().find((c) => c.slug === slug);
+export const getCaseStudy = async (slug: string) => (await getCaseStudies()).find((c) => c.slug === slug);
 
-export const getById = (id: string) => readAll().find((c) => c.id === id);
+export const getById = async (id: string) => (await readAll()).find((c) => c.id === id);
 
 /** Current slug for an old /case-studies/<slug> address. */
-export const findByLegacySlug = (legacy: string) =>
-  getCaseStudies().find((c) => c.legacySlugs.includes(legacy) || c.slug === legacy);
+export const findByLegacySlug = async (legacy: string) =>
+  (await getCaseStudies()).find((c) => c.legacySlugs.includes(legacy) || c.slug === legacy);
 
 /** Next case to read: the following published study in /work order, wrapping round. */
-export const nextCaseStudy = (slug: string) => {
-  const list = getCaseStudies();
-  const i = list.findIndex((c) => c.slug === slug);
-  return list[(i + 1) % list.length];
-};
+export async function nextCaseStudy(slug: string) {
+  const all = await getCaseStudies();
+  const i = all.findIndex((c) => c.slug === slug);
+  return all[(i + 1) % all.length];
+}
 
 /** A slug not used by any other record: the client name, then -2, -3… */
-export function uniqueSlug(base: string, ignoreId?: string) {
-  const taken = new Set(readAll().filter((c) => c.id !== ignoreId).map((c) => c.slug));
+function uniqueSlug(records: CaseStudy[], base: string, ignoreId?: string) {
+  const taken = new Set(records.filter((c) => c.id !== ignoreId).map((c) => c.slug));
   const root = slugify(base) || "case-study";
   let s = root;
   for (let n = 2; taken.has(s); n++) s = `${root}-${n}`;
   return s;
 }
 
+/* ---------------------------------------------------------------- mutations */
+
 export type CaseStudyInput = Omit<CaseStudy, "id" | "createdAt" | "updatedAt" | "legacySlugs">;
 
-export function createCaseStudy(input: CaseStudyInput) {
-  const list = readAll();
+export async function createCaseStudy(input: CaseStudyInput) {
+  const records = await readAll();
   const now = new Date().toISOString();
   const record: CaseStudy = {
     ...input,
     id: `cs_${randomUUID().slice(0, 8)}`,
-    slug: uniqueSlug(input.slug || input.client),
+    slug: uniqueSlug(records, input.slug || input.client),
     legacySlugs: [],
     createdAt: now,
     updatedAt: now,
   };
   // Newest work leads the /work page.
-  writeAll([record, ...list]);
+  await writeAll([record, ...records]);
   return record;
 }
 
-export function updateCaseStudy(id: string, input: CaseStudyInput) {
-  const list = readAll();
-  const i = list.findIndex((c) => c.id === id);
+export async function updateCaseStudy(id: string, input: CaseStudyInput) {
+  const records = await readAll();
+  const i = records.findIndex((c) => c.id === id);
   if (i < 0) return null;
-  const prev = list[i];
-  const slug = uniqueSlug(input.slug || input.client, id);
+  const prev = records[i];
+  const slug = uniqueSlug(records, input.slug || input.client, id);
   // Keep the old address working when a slug changes.
   const legacySlugs = slug !== prev.slug ? [...new Set([...prev.legacySlugs, prev.slug])] : prev.legacySlugs;
   const record: CaseStudy = { ...prev, ...input, slug, legacySlugs, updatedAt: new Date().toISOString() };
-  list[i] = record;
-  writeAll(list);
+  records[i] = record;
+  await writeAll(records);
   return record;
 }
 
-export function deleteCaseStudy(id: string) {
-  const list = readAll();
-  const next = list.filter((c) => c.id !== id);
-  if (next.length === list.length) return false;
-  writeAll(next);
+export async function deleteCaseStudy(id: string) {
+  const records = await readAll();
+  const next = records.filter((c) => c.id !== id);
+  if (next.length === records.length) return false;
+  await writeAll(next);
   return true;
 }

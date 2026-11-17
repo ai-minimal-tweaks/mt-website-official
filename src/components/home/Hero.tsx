@@ -64,7 +64,7 @@ export function Hero() {
         data-hero-shell
         className="relative isolate flex min-h-[calc(100svh-1rem)] items-center justify-center overflow-hidden rounded-[1.5rem] bg-ink text-white will-change-transform sm:min-h-[calc(100svh-1.5rem)] sm:rounded-shell"
       >
-        <GradientField />
+        <GradientField priority />
         <HeroScene variant="hero" />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,rgba(0,0,0,.35),transparent_70%)]" />
 

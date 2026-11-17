@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { deleteCaseStudy, getById, updateCaseStudy } from "@/lib/cms/store";
 import { isSignedIn, refreshSite, saveFailed } from "@/lib/cms/guard";
 import { parseCaseStudy } from "@/lib/cms/validate";
+import { bodyTooLarge } from "@/lib/security/request";
 
 export const dynamic = "force-dynamic";
 type Ctx = { params: Promise<{ id: string }> };
@@ -10,16 +11,17 @@ const missing = () => NextResponse.json({ error: "Case study not found." }, { st
 
 export async function GET(_: Request, { params }: Ctx) {
   if (!(await isSignedIn())) return unauthorized();
-  const record = getById((await params).id);
+  const record = await getById((await params).id);
   return record ? NextResponse.json(record) : missing();
 }
 
 export async function PUT(req: Request, { params }: Ctx) {
   if (!(await isSignedIn())) return unauthorized();
+  if (bodyTooLarge(req, 1_000_000)) return NextResponse.json({ error: "Request too large." }, { status: 413 });
   const parsed = parseCaseStudy(await req.json().catch(() => null));
   if ("errors" in parsed) return NextResponse.json({ errors: parsed.errors }, { status: 422 });
   try {
-    const record = updateCaseStudy((await params).id, parsed.data);
+    const record = await updateCaseStudy((await params).id, parsed.data);
     if (!record) return missing();
     refreshSite();
     return NextResponse.json(record);
@@ -31,7 +33,7 @@ export async function PUT(req: Request, { params }: Ctx) {
 export async function DELETE(_: Request, { params }: Ctx) {
   if (!(await isSignedIn())) return unauthorized();
   try {
-    if (!deleteCaseStudy((await params).id)) return missing();
+    if (!(await deleteCaseStudy((await params).id))) return missing();
     refreshSite();
     return NextResponse.json({ ok: true });
   } catch (e) {

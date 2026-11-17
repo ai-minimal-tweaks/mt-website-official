@@ -3,13 +3,14 @@
 import { useId, useState } from "react";
 import { faqs } from "@/content/home";
 import { Chevron, SectionHeading } from "@/components/ui";
+import { jsonLd } from "@/lib/security/json-ld";
 
 export function Faq({ items = faqs }: { items?: typeof faqs }) {
   const [open, setOpen] = useState<number | null>(0);
   const base = useId();
 
   return (
-    <section className="py-16 sm:py-24" aria-labelledby="faq-title">
+    <section id="faq" className="scroll-mt-24 py-16 sm:py-24" aria-labelledby="faq-title">
       <div className="container-site max-w-[60rem]">
         <div id="faq-title">
           <SectionHeading align="center" lead="We know what's keeping you" accent="worried in finding the right digital partner" />
@@ -60,7 +61,7 @@ export function Faq({ items = faqs }: { items?: typeof faqs }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "FAQPage",
             mainEntity: items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),

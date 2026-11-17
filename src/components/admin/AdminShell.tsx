@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogoMark } from "@/components/ui";
 import { Icon, ToastProvider } from "./ui";
+import type { StorageMode } from "@/lib/cms/store";
+
+const StorageCtx = createContext<StorageMode>("file");
+/** Where CMS saves and uploads go on this server ("blob" on Vercel, "file" locally). */
+export const useStorageMode = () => useContext(StorageCtx);
 
 const tabs = [
   { label: "Home", href: "/admin", exact: true },
@@ -12,7 +17,7 @@ const tabs = [
 ];
 
 /** CRM-style console chrome: global header (app launcher, search, user menu) + app navigation tabs. */
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({ children, storage }: { children: React.ReactNode; storage: StorageMode }) {
   const pathname = usePathname() ?? "";
   const router = useRouter();
   const [menu, setMenu] = useState(false);
@@ -37,6 +42,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
+    <StorageCtx.Provider value={storage}>
     <ToastProvider>
       <header className="sticky top-0 z-40 border-b border-[#e2ddd6] bg-white">
         <div className="flex h-14 items-center gap-3 px-3 sm:px-5">
@@ -66,7 +72,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <div role="menu" className="absolute right-0 top-11 w-56 overflow-hidden rounded-lg border border-[#e2ddd6] bg-white py-1 shadow-xl">
                 <p className="border-b border-[#ece8e2] px-4 py-2.5 text-sm">
                   <span className="block font-semibold">CMS Admin</span>
-                  <span className="text-xs text-[#7a7f8b]">mtadmincms</span>
+                  <span className="text-xs text-[#7a7f8b]">Signed in</span>
                 </p>
                 <a role="menuitem" href="/work" target="_blank" rel="noreferrer" className="block px-4 py-2 text-sm hover:bg-[#f7f5f2]">
                   View /work page
@@ -100,8 +106,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       {/* Brand band behind the page header, like a CRM's themed backdrop */}
       <div className="relative">
         <div aria-hidden className="absolute inset-x-0 top-0 h-40 bg-[linear-gradient(120deg,#0F2944_0%,#1b2f52_55%,#7a2c00_100%)]" />
-        <div className="relative px-3 pb-12 pt-4 sm:px-5">{children}</div>
+        <div className="relative px-3 pb-12 pt-4 sm:px-5">
+          {storage === "read-only" && (
+            <p role="alert" className="mx-auto mb-4 max-w-[90rem] rounded-md border border-[#f3c4c2] bg-[#fdecea] px-4 py-3 text-sm text-[#8a1c14]">
+              <strong>Saving is off on this server.</strong> In Vercel, open this project → Storage → Create Storage → Blob, choose
+              Public access, tick “Add a read-write token env var to this connection”, create it, then redeploy. Until then you can view
+              content but not save it.
+            </p>
+          )}
+          {children}
+        </div>
       </div>
     </ToastProvider>
+    </StorageCtx.Provider>
   );
 }

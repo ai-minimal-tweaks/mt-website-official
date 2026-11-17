@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { clientIp, rateLimit } from "@/lib/security/rate-limit";
+import { bodyTooLarge } from "@/lib/security/request";
 import { budgetOptions, serviceOptions, timelineOptions, type ContactPayload } from "@/content/contact";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -9,6 +11,11 @@ const clip = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slic
  * Without a webhook, local dev logs the lead; production returns 503 so nothing is dropped silently.
  */
 export async function POST(req: Request) {
+  if (bodyTooLarge(req, 20_000)) return NextResponse.json({ error: "Request too large." }, { status: 413 });
+  // 5 enquiries per 10 minutes per IP is plenty for a person and stops scripted spam.
+  if (!rateLimit(`contact:${clientIp(req)}`, 5, 10 * 60 * 1000).ok) {
+    return NextResponse.json({ error: "Too many messages. Please try again a little later." }, { status: 429 });
+  }
   let body: Record<string, unknown>;
   try {
     body = await req.json();
