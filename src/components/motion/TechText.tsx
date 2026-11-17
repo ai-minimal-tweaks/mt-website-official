@@ -2,6 +2,8 @@
  * TechText — from React Bits (https://reactbits.dev/text-animations/tech-text), TS + Tailwind variant.
  * Copyright (c) 2026 David Haz. MIT + Commons Clause License Condition v1.0: free to use as part of this
  * website; the component itself may not be sold, sublicensed or redistributed on its own.
+ * Site change (performance): frames that only advance the ambient sweep are drawn at 30 fps, and skipped while an
+ * overlay covers the page (html[data-bg-pause]) or the tab is hidden. Interaction still renders at full rate.
  */
 'use client';
 
@@ -73,6 +75,7 @@ type Settings = Required<Omit<TechTextProps, 'className' | 'style'>>;
 const LABEL_FONT = '10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 const FALLOFF_STEPS = 8;
 const SPRING = 320;
+const AMBIENT_FRAME_MS = 1000 / 30 - 1;
 const INHERIT = /^(currentcolor|inherit)$/i;
 const INTRO_DELAY = 0.15;
 const KICK_DECAY = 0.62;
@@ -761,10 +764,18 @@ const TechText = ({
       wakeRef.current();
     };
 
+    let ambientOnly = false; // the last frame only moved the idle sweep: nothing urgent to draw
     const tick = (now: number) => {
       raf = 0;
       const s = settingsRef.current;
       if (!s) return;
+      if (
+        ambientOnly &&
+        (now - last < AMBIENT_FRAME_MS || document.hidden || document.documentElement.hasAttribute('data-bg-pause'))
+      ) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       if (sizeDirty) {
         sizeDirty = false;
         width = Math.max(1, container.clientWidth);
@@ -959,6 +970,7 @@ const TechText = ({
         (guideAlpha > 0.005 && guideAlpha < 0.995) ||
         Math.abs(presence - (s.reveal === 'area' && active && dragging < 0 ? 1 : 0)) > 0.002 ||
         (frame.alpha > 0.01 && frame.alpha < 0.99);
+      ambientOnly = sweeping && !settling;
       if ((active || settling) && visible && alive) raf = requestAnimationFrame(tick);
     };
 

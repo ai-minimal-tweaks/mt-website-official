@@ -98,7 +98,6 @@ export function HeroHeadline({ layout, play }: { layout: "desktop" | "mobile"; p
     <div style={{ width, height: rowH }} className={tone === "ember" ? "text-[#FE9004]" : "text-white"}>
       {play && (
         <TechText
-          sweep={false}
           text={text}
           fontSize={font}
           fontWeight={WEIGHT}
