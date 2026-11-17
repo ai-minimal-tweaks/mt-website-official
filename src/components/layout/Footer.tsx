@@ -6,7 +6,7 @@ import { GradientField } from "@/components/three/GradientField";
 /** Dark footer with the liquid-light field. `cta={false}` drops the "Got an idea?" block (e.g. on /contact). */
 export function Footer({ cta = true }: { cta?: boolean }) {
   return (
-    <footer className="relative isolate overflow-hidden bg-ink pt-20 text-white sm:pt-24">
+    <footer id="contact" className="relative isolate scroll-mt-24 overflow-hidden bg-ink pt-20 text-white sm:pt-24">
       <GradientField bias={[-0.1, -0.15]} intensity={0.8} />
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink/60" />
 

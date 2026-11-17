@@ -1,3 +1,5 @@
+import { isHiddenPage, resolveHref } from "./pages";
+
 // Global navigation, footer and contact data. URLs follow docs/architecture/sitemap-and-architecture.md.
 // /contact replaces the old /talk page and /about replaces /tweakers (308s in next.config.ts); /testimonials is new.
 // The blog (Insights) is not part of the revamp, so it is not linked anywhere.
@@ -17,7 +19,8 @@ export const site = {
 };
 
 // `match` lists other path prefixes that light up the item (case studies live under Work).
-export const primaryNav: NavLink[] = [
+// Full navigation. What is shown right now is `primaryNav` below, which applies one-pager mode (src/lib/pages.ts).
+export const allNav: NavLink[] = [
   { label: "Work", href: "/work", match: ["/work", "/case-studies"] },
   { label: "Services", href: "/services", match: ["/webflow-development-agency"] },
   { label: "About", href: "/about", match: ["/tweakers"] },
@@ -28,9 +31,22 @@ export const primaryNav: NavLink[] = [
 export const isActive = (item: NavLink, pathname: string) =>
   [item.href, ...(item.match ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
-export const ctaLink: NavLink = { label: "Start a project", href: "/contact" };
+const resolveLinks = (links: NavLink[]) =>
+  links.flatMap((l) => {
+    if (l.external) return [l];
+    const href = resolveHref(l.href);
+    return href ? [{ ...l, href }] : [];
+  });
 
-export const footerColumns: { title: string; links: NavLink[] }[] = [
+/** Header navigation as shown right now: in one-pager mode each item scrolls to its homepage section. */
+export const primaryNav: NavLink[] = resolveLinks(allNav);
+
+/** Mobile menu also lists Careers (dropped while it is hidden). */
+export const mobileNav: NavLink[] = resolveLinks([...allNav, { label: "Careers", href: "/become-a-tweaker" }]);
+
+export const ctaLink: NavLink = { label: "Start a project", href: resolveHref("/contact") ?? "/" };
+
+const allFooterColumns: { title: string; links: NavLink[] }[] = [
   {
     title: "Services",
     links: [
@@ -59,6 +75,11 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
     ],
   },
 ];
+
+/** Footer link columns as shown right now: in one-pager mode, links to hidden pages are left out. */
+export const footerColumns = allFooterColumns
+  .map((col) => ({ ...col, links: col.links.filter((l) => l.external || !isHiddenPage(l.href)) }))
+  .filter((col) => col.links.length > 0);
 
 export type SocialKey = "x" | "instagram" | "linkedin" | "youtube" | "whatsapp";
 

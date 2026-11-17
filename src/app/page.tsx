@@ -7,6 +7,7 @@ import { Ideas } from "@/components/home/Ideas";
 import { Testimonials } from "@/components/home/Testimonials";
 import { Faq } from "@/components/home/Faq";
 import { site } from "@/lib/site";
+import { jsonLd } from "@/lib/security/json-ld";
 
 const orgSchema = {
   "@context": "https://schema.org",
@@ -32,7 +33,7 @@ export default function HomePage() {
         <Faq />
       </main>
       <Footer />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(orgSchema) }} />
     </>
   );
 }

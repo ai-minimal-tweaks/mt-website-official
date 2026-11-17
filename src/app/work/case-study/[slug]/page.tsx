@@ -11,15 +11,16 @@ import { caseStudyHref, isUploaded, mediaOf, type Block } from "@/content/case-s
 import { getCaseStudies, getCaseStudy, nextCaseStudy } from "@/lib/cms/store";
 import { testimonials } from "@/content/testimonials";
 import { site } from "@/lib/site";
+import { jsonLd } from "@/lib/security/json-ld";
 
 type Props = { params: Promise<{ slug: string }> };
 
 // Existing case studies are pre-rendered; ones published from the CMS later render on first request
 // (the CMS revalidates the site on every save). Unknown slugs 404.
-export const generateStaticParams = () => getCaseStudies().map((c) => ({ slug: c.slug }));
+export const generateStaticParams = async () => (await getCaseStudies()).map((c) => ({ slug: c.slug }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const study = getCaseStudy((await params).slug);
+  const study = await getCaseStudy((await params).slug);
   if (!study) return {};
   return {
     title: { absolute: study.metaTitle || `${study.client}: ${study.title}` },
@@ -67,7 +68,7 @@ function SectionTitle({ index, label, lead, accent, tone = "dark" }: { index: st
 }
 
 export default async function CaseStudyPage({ params }: Props) {
-  const study = getCaseStudy((await params).slug);
+  const study = await getCaseStudy((await params).slug);
   if (!study) notFound();
 
   const media = mediaOf(study);
@@ -80,7 +81,7 @@ export default async function CaseStudyPage({ params }: Props) {
     (study.testimonial?.quote ? study.testimonial : null) ??
     testimonials.find((t) => t.caseSlug === study.slug) ??
     testimonials.find((t) => t.brand === study.client);
-  const next = nextCaseStudy(study.slug);
+  const next = await nextCaseStudy(study.slug);
 
   const facts = [
     ["Client", study.client],
@@ -288,7 +289,7 @@ export default async function CaseStudyPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [

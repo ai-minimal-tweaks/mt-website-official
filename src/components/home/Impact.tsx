@@ -12,7 +12,7 @@ const community = ["from-[#d9a27a] to-[#6b3d22]", "from-[#c7b6a6] to-[#4a3f3a]",
 export function Impact() {
   const [brands, industries, communityStat] = stats;
   return (
-    <section className="py-16 sm:py-24" aria-labelledby="impact-title">
+    <section id="impact" className="scroll-mt-24 py-16 sm:py-24" aria-labelledby="impact-title">
       <div className="container-site">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeading lead="More Than Numbers." accent="It’s the Impact We Create." />

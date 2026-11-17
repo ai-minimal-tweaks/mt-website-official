@@ -8,7 +8,7 @@ const hasTeamPhoto = fs.existsSync(path.join(process.cwd(), "public", TEAM_PHOTO
 
 export function About() {
   return (
-    <section className="relative overflow-hidden py-20 sm:py-28" aria-labelledby="about-title">
+    <section id="about" className="relative scroll-mt-24 overflow-hidden py-20 sm:py-28" aria-labelledby="about-title">
       <div aria-hidden className="pointer-events-none absolute -left-40 -top-24 size-[30rem] rounded-full bg-peach blur-[110px]" />
       <div aria-hidden className="pointer-events-none absolute -bottom-40 -right-40 size-[30rem] rounded-full bg-peach blur-[110px]" />
 

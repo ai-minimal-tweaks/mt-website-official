@@ -54,8 +54,20 @@ export const mediaOf = (c: CaseStudy) =>
     (b): b is Extract<Block, { type: "image" | "video" }> => b.type === "image" || b.type === "video",
   );
 
-/** Uploaded files are served by our own media route and skip the image optimiser. */
-export const isUploaded = (src: string) => src.startsWith("/api/media/");
+/**
+ * Whether next/image may optimise this source. Only our own files and the hosts allowed in next.config.ts
+ * (Webflow CDN, Vercel Blob) can be optimised; anything else a CMS editor pastes would make next/image throw,
+ * so those images are passed through unoptimised.
+ */
+export function isUploaded(src: string) {
+  if (src.startsWith("/images/")) return false;
+  try {
+    const host = new URL(src).hostname;
+    return !(host === "cdn.prod.website-files.com" || host.endsWith(".public.blob.vercel-storage.com"));
+  } catch {
+    return true; // relative paths such as /api/media/… (disk uploads)
+  }
+}
 
 export const slugify = (s: string) =>
   s

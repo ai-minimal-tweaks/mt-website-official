@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { ctaLink, isActive, primaryNav, site, socials } from "@/lib/site";
+import { ctaLink, isActive, mobileNav, primaryNav, site, socials } from "@/lib/site";
 import { Arrow, Logo, SocialIcon } from "@/components/ui";
 import { useLenis } from "@/components/motion/MotionProvider";
 
@@ -217,11 +217,13 @@ export function Header() {
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-flame/40 blur-[90px]" />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-24 size-96 rounded-full bg-blaze/40 blur-[100px]" />
         <ul className="relative flex flex-col">
-          {[...primaryNav, { label: "Careers", href: "/become-a-tweaker" }].map((item) => (
+          {mobileNav.map((item) => (
             <li key={item.href} className="overflow-hidden">
               <Link
                 data-menu-item
                 href={item.href}
+                // Same-page section links (one-pager mode) don't change the pathname, so close explicitly.
+                onClick={() => setOpen(false)}
                 className={`flex items-baseline justify-between border-b border-white/10 py-2.5 text-[2.1rem] font-medium tracking-[-0.04em] ${
                   isActive(item, pathname) ? "text-ember" : ""
                 }`}
@@ -235,6 +237,7 @@ export function Header() {
         <div data-menu-foot className="relative mt-auto space-y-5 pt-8">
           <Link
             href={ctaLink.href}
+            onClick={() => setOpen(false)}
             className="flex h-14 items-center justify-center gap-2 rounded-full bg-white text-sm font-semibold uppercase tracking-[0.06em] text-ink"
           >
             Let&apos;s start tweaking <Arrow className="size-4" />

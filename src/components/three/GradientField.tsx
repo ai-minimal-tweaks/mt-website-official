@@ -20,10 +20,13 @@ const fragment = /* glsl */ `
   uniform float uIntensity;
   uniform vec2 uBias;
 
-  vec3 hash3(vec2 p){ vec3 q = vec3(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)), dot(p,vec2(419.2,371.9))); return fract(sin(q)*43758.5453); }
+  // Sin-free hash (Dave Hoskins). The classic fract(sin(x)*43758.5) hash loses precision on mobile GPUs and
+  // turns the smooth light into blocky, polygon-like artifacts.
+  float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
   float noise(vec2 p){
     vec2 i = floor(p); vec2 f = fract(p); vec2 u = f*f*(3.0-2.0*f);
-    float a = hash3(i).x, b = hash3(i+vec2(1,0)).x, c = hash3(i+vec2(0,1)).x, d = hash3(i+vec2(1,1)).x;
+    i = mod(i, 289.0); // keep lattice coordinates small so the hash stays precise as time advances
+    float a = hash12(i), b = hash12(i+vec2(1,0)), c = hash12(i+vec2(0,1)), d = hash12(i+vec2(1,1));
     return mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
   }
   float fbm(vec2 p){ float v = 0.0; float a = 0.5; mat2 r = mat2(0.8,-0.6,0.6,0.8); for(int i=0;i<5;i++){ v += a*noise(p); p = r*p*2.02; a *= 0.5; } return v; }
@@ -60,24 +63,31 @@ const fragment = /* glsl */ `
 
     float vig = smoothstep(1.35, 0.25, length((uv-0.5)*vec2(aspect*0.85, 1.0)));
     col *= mix(0.55, 1.0, vig);
-    col += (hash3(uv*uRes + uTime).x - 0.5) * 0.035; // film grain to avoid banding
+    col += (hash12(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * 0.035; // film grain to avoid banding
     gl_FragColor = vec4(col, 1.0);
   }
 `;
 
 type Props = {
   className?: string;
+  /**
+   * Hero light fields render on every device. Other fields (dark bands, footer) use the CSS gradient on phones and
+   * tablets: each WebGL canvas costs GPU memory, and mobile Safari drops contexts when a page holds too many.
+   */
+  priority?: boolean;
   intensity?: number;
   /** Offsets the glow centres; lets each section frame the light differently. */
   bias?: [number, number];
 };
 
-export function GradientField({ className = "", intensity = 1, bias = [0, 0] }: Props) {
+export function GradientField({ className = "", intensity = 1, bias = [0, 0], priority = false }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
+
+    if (!priority && matchMedia("(max-width: 1023px), (pointer: coarse)").matches) return; // CSS fallback stays visible
 
     let renderer: THREE.WebGLRenderer;
     try {
@@ -93,6 +103,11 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0] }: 
     renderer.domElement.className = "absolute inset-0 size-full";
     renderer.domElement.setAttribute("aria-hidden", "true");
     host.appendChild(renderer.domElement);
+    // Context lost (GPU memory pressure): drop the canvas so the CSS gradient behind it shows instead.
+    renderer.domElement.addEventListener("webglcontextlost", (e) => {
+      e.preventDefault();
+      renderer.domElement.style.display = "none";
+    });
 
     const uniforms = {
       uTime: { value: Math.random() * 100 },
@@ -132,7 +147,8 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0] }: 
     const tick = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      uniforms.uTime.value += dt;
+      // Wrapped so shader inputs stay small (mobile float precision); an hour of drift before it wraps.
+      uniforms.uTime.value = (uniforms.uTime.value + dt) % 3600;
       uniforms.uPointer.value.lerp(target, 1 - Math.pow(0.02, dt));
       const rect = host.getBoundingClientRect();
       uniforms.uScroll.value = Math.min(Math.max(-rect.top / Math.max(rect.height, 1), 0), 1);
@@ -164,7 +180,7 @@ export function GradientField({ className = "", intensity = 1, bias = [0, 0] }: 
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [intensity, bias[0], bias[1]]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [intensity, bias[0], bias[1], priority]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div

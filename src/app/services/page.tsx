@@ -8,7 +8,7 @@ import { Arrow, Pill, SectionHeading } from "@/components/ui";
 import { GradientField } from "@/components/three/GradientField";
 import { faqs } from "@/content/home";
 import { caseStudyHref } from "@/content/case-studies";
-import { getCaseStudy } from "@/lib/cms/store";
+import { getCaseStudies } from "@/lib/cms/store";
 import { engagements, pillars, processSteps } from "@/content/services";
 
 export const metadata: Metadata = {
@@ -18,7 +18,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const studies = await getCaseStudies();
   return (
     <>
       <main>
@@ -78,7 +79,7 @@ export default function ServicesPage() {
             {/* ≥1024px the pillars stick and stack: each one sinks back as the next slides over it */}
             <div data-anim="stack" className="mt-12 space-y-8">
               {pillars.map((p, i) => {
-                const related = getCaseStudy(p.related);
+                const related = studies.find((c) => c.slug === p.related);
                 return (
                   <article
                     key={p.id}

@@ -164,21 +164,30 @@ export function HeroScene({
     if (!host) return;
 
     let renderer: THREE.WebGLRenderer;
+    // Phones and tablets ("lite"): simpler materials that render reliably on mobile GPUs.
     const mobile = matchMedia("(max-width: 767px)").matches;
+    const lite = mobile || matchMedia("(pointer: coarse)").matches;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: !mobile, alpha: true, powerPreference: "high-performance" });
+      // Antialiasing stays on for phones too: without it the objects' silhouettes break into visible facets.
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, precision: "highp", powerPreference: lite ? "default" : "high-performance" });
     } catch {
       return; // no WebGL: the light field alone still carries the hero
     }
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fine = matchMedia("(pointer: fine)").matches;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.95;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.domElement.className = "absolute inset-0 size-full";
     renderer.domElement.setAttribute("aria-hidden", "true");
     host.appendChild(renderer.domElement);
+    // If the browser drops the GPU context (memory pressure on phones), hide the canvas instead of showing garbage.
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      renderer.domElement.style.display = "none";
+    };
+    renderer.domElement.addEventListener("webglcontextlost", onLost);
 
     const scene = new THREE.Scene();
     const pmrem = new THREE.PMREMGenerator(renderer);
@@ -212,8 +221,8 @@ export function HeroScene({
         roughness: 0.2,
         clearcoat: 1,
         clearcoatRoughness: 0.1,
-        sheen: 0.6,
-        sheenColor: new THREE.Color("#ffb347"),
+        // Sheen and iridescence use precision-hungry shader paths that glitch on some mobile GPUs.
+        ...(!lite && { sheen: 0.6, sheenColor: new THREE.Color("#ffb347") }),
       }),
       // Holographic pearl: the "new gen" accent among the brand oranges.
       iris: new THREE.MeshPhysicalMaterial({
@@ -221,22 +230,14 @@ export function HeroScene({
         roughness: 0.12,
         metalness: 0.2,
         clearcoat: 1,
-        iridescence: 1,
-        iridescenceIOR: 1.6,
-        iridescenceThicknessRange: [180, 820],
+        ...(!lite && { iridescence: 1, iridescenceIOR: 1.6, iridescenceThicknessMinimum: 180, iridescenceThicknessMaximum: 820 }),
       }),
       chrome: new THREE.MeshPhysicalMaterial({ color: "#e8e4df", metalness: 1, roughness: 0.12, envMapIntensity: 1.8 }),
-      glass: new THREE.MeshPhysicalMaterial({
-        color: "#ffd9b0",
-        metalness: 0,
-        roughness: 0.05,
-        transmission: mobile ? 0 : 1,
-        opacity: mobile ? 0.55 : 1,
-        transparent: mobile,
-        thickness: 0.8,
-        ior: 1.45,
-        flatShading: true,
-      }),
+      // Desktop: faceted glass with real transmission. Lite: an opaque faceted gem instead; a semi-transparent
+      // faceted mesh shows its own back faces through itself, which read as broken polygons on phones.
+      glass: lite
+        ? new THREE.MeshPhysicalMaterial({ color: "#ffd9b0", metalness: 0.3, roughness: 0.18, clearcoat: 1, flatShading: true })
+        : new THREE.MeshPhysicalMaterial({ color: "#ffd9b0", metalness: 0, roughness: 0.05, transmission: 1, thickness: 0.8, ior: 1.45, flatShading: true }),
     };
 
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 60);

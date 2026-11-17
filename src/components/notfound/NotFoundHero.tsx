@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import { resolveHref } from "@/lib/pages";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { EmberRing } from "@/components/three/EmberRing";
@@ -85,7 +86,7 @@ export function NotFoundHero() {
   return (
     <section ref={root} className="relative p-2 sm:p-3" aria-labelledby="nf-title">
       <div className="relative isolate overflow-hidden rounded-[1.5rem] bg-ink text-white sm:rounded-shell">
-        <GradientField bias={[0.05, 0.12]} intensity={0.9} />
+        <GradientField bias={[0.05, 0.12]} intensity={0.9} priority />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_50%_45%,rgba(0,0,0,.45),transparent_75%)]" />
 
         <div className="container-site relative flex min-h-[calc(100svh-1rem)] flex-col items-center justify-center pb-24 pt-32 text-center sm:min-h-[calc(100svh-1.5rem)]">
@@ -137,7 +138,10 @@ export function NotFoundHero() {
               { label: "See our work", href: "/work" },
               { label: "Services", href: "/services" },
               { label: "Testimonials", href: "/testimonials" },
-            ].map((l, i) => (
+            ]
+              // One-pager mode: hidden pages point at their homepage section (src/lib/pages.ts).
+              .map((l) => ({ ...l, href: resolveHref(l.href) ?? "/" }))
+              .map((l, i) => (
               <Link
                 key={l.href}
                 href={l.href}

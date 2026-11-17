@@ -21,7 +21,7 @@ export default function ContactPage() {
       <main>
         <section className="relative p-2 sm:p-3">
           <div data-anim="shell" className="relative isolate overflow-hidden rounded-[1.5rem] bg-ink text-white sm:rounded-shell">
-            <GradientField bias={[0.1, -0.05]} />
+            <GradientField bias={[0.1, -0.05]} priority />
             {/* The stacked phone layout stretches the glow behind the copy; darken it to keep text contrast */}
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-ink/50 lg:hidden" />
             <div className="container-site relative grid gap-12 pb-12 pt-32 sm:pt-40 lg:grid-cols-[1fr_1.15fr] lg:gap-16 lg:pb-16">

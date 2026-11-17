@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/work" },
 };
 
-export default function WorkPage() {
-  const caseStudies = getCaseStudies();
+export default async function WorkPage() {
+  const caseStudies = await getCaseStudies();
   return (
     <>
       <main>
