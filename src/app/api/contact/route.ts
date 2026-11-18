@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { bodyTooLarge } from "@/lib/security/request";
-import { budgetOptions, serviceOptions, timelineOptions, workEmailProblem, type ContactPayload } from "@/content/contact";
+import {
+  budgetOptions,
+  serviceOptions,
+  timelineOptions,
+  workEmailProblem,
+  enquiryErrors,
+  type ContactPayload,
+} from "@/content/contact";
 import { EmailError, emailConfigured, emailLead } from "@/lib/email/leads";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -40,10 +47,16 @@ export async function POST(req: Request) {
     source: clip(body.source, 120) || "contact",
   };
 
-  const errors: Record<string, string> = {};
-  if (!lead.name) errors.name = "Please tell us your name.";
-  if (!EMAIL.test(lead.email)) errors.email = "Please enter a valid email address.";
-  else if (workEmailProblem(lead.email)) errors.email = workEmailProblem(lead.email)!;
+  // Homepage pop-ups: each form's mandatory fields (shared with the browser check). The older /contact page form
+  // (hidden while one-pager mode is on) only requires a name and an official email.
+  const homeForm = (lead.source ?? "").startsWith("home-v2-");
+  const errors: Record<string, string | undefined> = homeForm
+    ? enquiryErrors(lead.kind, lead)
+    : {
+        name: lead.name ? undefined : "Please tell us your name.",
+        email: !EMAIL.test(lead.email) ? "Please enter a valid email address." : (workEmailProblem(lead.email) ?? undefined),
+      };
+  for (const k of Object.keys(errors)) if (!errors[k]) delete errors[k];
   if (Object.keys(errors).length) return NextResponse.json({ errors }, { status: 422 });
 
   const webhook = process.env.CONTACT_WEBHOOK_URL;

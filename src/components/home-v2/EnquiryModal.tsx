@@ -8,7 +8,16 @@ import { SuccessScene } from "./SuccessScene";
 import { pauseBackground } from "./pauseBackground";
 import TechText from "@/components/motion/TechText";
 import { useLenis } from "@/components/motion/MotionProvider";
-import { budgetOptions, serviceOptions, timelineOptions, workEmailProblem, type EnquiryKind } from "@/content/contact";
+import {
+  budgetOptions,
+  enquiryErrors,
+  requiredFields,
+  serviceOptions,
+  timelineOptions,
+  workEmailProblem,
+  type EnquiryField,
+  type EnquiryKind,
+} from "@/content/contact";
 import { forms } from "@/content/home-v2";
 import { site } from "@/lib/site";
 
@@ -49,16 +58,29 @@ function Chips({
   options,
   value,
   onPick,
+  required,
+  error,
 }: {
   legend: string;
   options: string[];
   value: string[];
   onPick: (option: string) => void;
+  required?: boolean;
+  error?: string;
 }) {
   return (
-    <fieldset data-f>
-      <legend className="text-[0.95rem] font-semibold">{legend}</legend>
-      <div className="mt-3 flex flex-wrap gap-2.5">
+    <fieldset data-f aria-invalid={error ? true : undefined}>
+      <legend className="text-[0.95rem] font-semibold">
+        {legend}
+        {required && " *"}
+      </legend>
+      {/* Missing: a red frame around the options, the same red as text fields. */}
+      <div
+        data-error={error ? "" : undefined}
+        className={`mt-3 flex flex-wrap gap-2.5 rounded-2xl transition-[box-shadow,background] duration-300 ${
+          error ? "-m-1.5 bg-[#fff5f3] p-1.5 shadow-[0_0_0_2px_#d9381e]" : ""
+        }`}
+      >
         {options.map((o) => {
           const on = value.includes(o);
           return (
@@ -88,6 +110,7 @@ function Chips({
           );
         })}
       </div>
+      {error && <span className="mt-2 block text-[0.8rem] font-medium text-[#d9381e]">{error}</span>}
     </fieldset>
   );
 }
@@ -249,23 +272,29 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
   const shake = (sel: string) =>
     gsap.fromTo(root.current!.querySelectorAll(sel), { x: -8 }, { x: 0, duration: 0.6, ease: "elastic.out(1, 0.25)" });
 
-  const validateYou = () => {
-    const e: Record<string, string> = {};
-    if (!v.name.trim()) e.name = "Please tell us your name.";
-    if (!EMAIL.test(v.email.trim())) e.email = "Please enter a valid email address.";
-    else if (workEmailProblem(v.email)) e.email = workEmailProblem(v.email)!;
+  const required = (f: EnquiryField) => (requiredFields[kind] as readonly string[]).includes(f);
+  /** Removes one field's error as soon as the visitor fixes it. */
+  const clearError = (f: EnquiryField) =>
+    setErrors((p) => (p[f] ? Object.fromEntries(Object.entries(p).filter(([k]) => k !== f)) : p));
+
+  /** Checks every mandatory field; marks the missing ones red, shakes them and scrolls the first into view. */
+  const validate = () => {
+    const e = enquiryErrors(kind, { ...v, services, budget: budget[0], timeline: timeline[0] }) as Record<string, string>;
     setErrors(e);
-    if (Object.keys(e).length) {
+    if (!Object.keys(e).length) return true;
+    buzz([10, 40, 10]);
+    requestAnimationFrame(() => {
       shake("[data-error]");
-      buzz([10, 40, 10]);
-      return false;
-    }
-    return true;
+      const first = root.current?.querySelector<HTMLElement>("[data-error]");
+      first?.scrollIntoView({ block: "center", behavior: "smooth" });
+      first?.querySelector<HTMLElement>("input, textarea")?.focus({ preventScroll: true });
+    });
+    return false;
   };
 
   const submit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!validateYou()) return;
+    if (!validate()) return;
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
@@ -305,18 +334,23 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
       case "you":
         return (
           <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
-            <Field label="Name" required error={errors.name} valid={!!v.name.trim()}>
+            <Field label="Name" required={required("name")} error={errors.name} valid={!!v.name.trim()}>
               <input
                 name="name"
                 autoComplete="name"
                 value={v.name}
-                onChange={set("name")}
+                onChange={(e) => (set("name")(e), clearError("name"))}
                 placeholder="Your name"
                 className={input}
                 maxLength={120}
               />
             </Field>
-            <Field label="Email" required error={errors.email} valid={EMAIL.test(v.email.trim()) && !workEmailProblem(v.email)}>
+            <Field
+              label="Email"
+              required={required("email")}
+              error={errors.email}
+              valid={EMAIL.test(v.email.trim()) && !workEmailProblem(v.email)}
+            >
               <input
                 name="email"
                 type="email"
@@ -325,7 +359,7 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
                 value={v.email}
                 onChange={(e) => {
                   set("email")(e);
-                  if (errors.email) setErrors(({ email: _, ...rest }) => rest);
+                  clearError("email");
                 }}
                 // Tell people straight away (not only on submit) that a free-mail address won't be accepted.
                 onBlur={() => {
@@ -341,12 +375,12 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
         );
       case "company":
         return (
-          <Field label="Company" valid={!!v.company.trim()}>
+          <Field label="Company" required={required("company")} error={errors.company} valid={!!v.company.trim()}>
             <input
               name="company"
               autoComplete="organization"
               value={v.company}
-              onChange={set("company")}
+              onChange={(e) => (set("company")(e), clearError("company"))}
               placeholder="Brand or company name"
               className={input}
               maxLength={160}
@@ -359,7 +393,9 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
             legend="Services interested in"
             options={serviceOptions}
             value={services}
-            onPick={(o) => setServices((p) => (p.includes(o) ? p.filter((x) => x !== o) : [...p, o]))}
+            onPick={(o) => (setServices((p) => (p.includes(o) ? p.filter((x) => x !== o) : [...p, o])), clearError("services"))}
+            required={required("services")}
+            error={errors.services}
           />
         );
       case "budget":
@@ -368,7 +404,9 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
             legend="Budget range"
             options={budgetOptions}
             value={budget}
-            onPick={(o) => setBudget((p) => (p[0] === o ? [] : [o]))}
+            onPick={(o) => (setBudget((p) => (p[0] === o ? [] : [o])), clearError("budget"))}
+            required={required("budget")}
+            error={errors.budget}
           />
         );
       case "timeline":
@@ -377,16 +415,18 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
             legend="Timeline"
             options={timelineOptions}
             value={timeline}
-            onPick={(o) => setTimeline((p) => (p[0] === o ? [] : [o]))}
+            onPick={(o) => (setTimeline((p) => (p[0] === o ? [] : [o])), clearError("timeline"))}
+            required={required("timeline")}
+            error={errors.timeline}
           />
         );
       case "message":
         return (
-          <Field label="Message">
+          <Field label="Message" required={required("message")} error={errors.message}>
             <textarea
               name="message"
               value={v.message}
-              onChange={set("message")}
+              onChange={(e) => (set("message")(e), clearError("message"))}
               rows={5}
               maxLength={5000}
               placeholder="Tell us about the brand and what you want it to do next."
