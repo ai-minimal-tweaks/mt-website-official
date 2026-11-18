@@ -10,6 +10,22 @@ export const nextSteps = [
   { title: "Proposal", body: "A clear scope, timeline and cost for the first phase." },
 ];
 
+/**
+ * Free / disposable email providers that can't be used on the enquiry forms: only company addresses are accepted.
+ * Add a domain here to block it (checked in the browser and again by /api/contact).
+ */
+export const blockedEmailDomains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "yopmail.com"];
+
+/** The part after "@", lower-cased ("" when there is none). */
+export const emailDomain = (email: string) => email.trim().toLowerCase().split("@").pop() ?? "";
+
+/** Null when the address is allowed, otherwise the message to show. */
+export function workEmailProblem(email: string): string | null {
+  const domain = emailDomain(email);
+  if (!email.includes("@") || !blockedEmailDomains.includes(domain)) return null;
+  return `Please use your work email. We can’t accept @${domain} addresses.`;
+}
+
 /** The two homepage forms. "deck" asks for the credentials deck; "project" is a full project brief. */
 export type EnquiryKind = "project" | "deck";
 

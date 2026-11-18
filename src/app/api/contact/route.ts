@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { bodyTooLarge } from "@/lib/security/request";
-import { budgetOptions, serviceOptions, timelineOptions, type ContactPayload } from "@/content/contact";
+import { budgetOptions, serviceOptions, timelineOptions, workEmailProblem, type ContactPayload } from "@/content/contact";
 import { EmailError, emailConfigured, emailLead } from "@/lib/email/leads";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -43,6 +43,7 @@ export async function POST(req: Request) {
   const errors: Record<string, string> = {};
   if (!lead.name) errors.name = "Please tell us your name.";
   if (!EMAIL.test(lead.email)) errors.email = "Please enter a valid email address.";
+  else if (workEmailProblem(lead.email)) errors.email = workEmailProblem(lead.email)!;
   if (Object.keys(errors).length) return NextResponse.json({ errors }, { status: 422 });
 
   const webhook = process.env.CONTACT_WEBHOOK_URL;
