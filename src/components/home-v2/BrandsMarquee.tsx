@@ -1,5 +1,15 @@
 import { homeV2 } from "@/content/home-v2";
 
+/** Logo height (% of the card) for a logo with the reference aspect ratio (3:1, a typical wordmark). */
+const BASE_HEIGHT = 30;
+const REF_ASPECT = 3;
+
+/**
+ * Equal visual area: a logo's perceived size follows its area, so height scales with 1/sqrt(aspect).
+ * Wide wordmarks get shorter, compact marks taller, and they all read as the same size.
+ */
+const logoHeight = (w: number, h: number, scale = 1) => BASE_HEIGHT * Math.sqrt(REF_ASPECT / (w / h)) * scale;
+
 type Brand = (typeof homeV2.brands)[number];
 
 function Card({ brand, compact }: { brand: Brand; compact: boolean }) {
@@ -26,12 +36,14 @@ function Card({ brand, compact }: { brand: Brand; compact: boolean }) {
           height={h}
           decoding="async"
           draggable={false}
-          className={`w-auto max-w-[72%] object-contain ${live ? "mt-4" : ""}`}
-          style={{ height: `${40 * scale}%` }}
+          // Centred in the card on both axes (the Live tag sits in the corner, clear of every logo).
+          // Not live: greyed out, like the card behind it.
+          className={`w-auto max-w-[64%] object-contain ${live ? "" : "opacity-55 grayscale"}`}
+          style={{ height: `${logoHeight(w ?? 3, h ?? 1, scale)}%` }}
         />
       ) : (
         <span
-          className={`px-4 text-center font-semibold tracking-[-0.03em] ${compact ? "text-[1.3rem]" : "text-[clamp(1.25rem,0.9rem+0.9vw,1.75rem)]"} ${live ? "mt-4 text-ink" : "text-ink/70"}`}
+          className={`px-4 text-center font-semibold tracking-[-0.03em] ${compact ? "text-[1.3rem]" : "text-[clamp(1.25rem,0.9rem+0.9vw,1.75rem)]"} ${live ? "text-ink" : "text-ink/40"}`}
         >
           {name}
         </span>
