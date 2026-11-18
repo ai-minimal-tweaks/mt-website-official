@@ -8,7 +8,7 @@ import { SuccessScene } from "./SuccessScene";
 import { pauseBackground } from "./pauseBackground";
 import TechText from "@/components/motion/TechText";
 import { useLenis } from "@/components/motion/MotionProvider";
-import { budgetOptions, serviceOptions, timelineOptions, type EnquiryKind } from "@/content/contact";
+import { budgetOptions, serviceOptions, timelineOptions, workEmailProblem, type EnquiryKind } from "@/content/contact";
 import { forms } from "@/content/home-v2";
 import { site } from "@/lib/site";
 
@@ -253,6 +253,7 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
     const e: Record<string, string> = {};
     if (!v.name.trim()) e.name = "Please tell us your name.";
     if (!EMAIL.test(v.email.trim())) e.email = "Please enter a valid email address.";
+    else if (workEmailProblem(v.email)) e.email = workEmailProblem(v.email)!;
     setErrors(e);
     if (Object.keys(e).length) {
       shake("[data-error]");
@@ -315,15 +316,23 @@ function Dialog({ kind, onClose }: { kind: EnquiryKind; onClose: () => void }) {
                 maxLength={120}
               />
             </Field>
-            <Field label="Email" required error={errors.email} valid={EMAIL.test(v.email.trim())}>
+            <Field label="Email" required error={errors.email} valid={EMAIL.test(v.email.trim()) && !workEmailProblem(v.email)}>
               <input
                 name="email"
                 type="email"
                 inputMode="email"
                 autoComplete="email"
                 value={v.email}
-                onChange={set("email")}
-                placeholder="you@brand.com"
+                onChange={(e) => {
+                  set("email")(e);
+                  if (errors.email) setErrors(({ email: _, ...rest }) => rest);
+                }}
+                // Tell people straight away (not only on submit) that a free-mail address won't be accepted.
+                onBlur={() => {
+                  const problem = workEmailProblem(v.email);
+                  if (problem) setErrors((p) => ({ ...p, email: problem }));
+                }}
+                placeholder="you@yourcompany.com"
                 className={input}
                 maxLength={200}
               />

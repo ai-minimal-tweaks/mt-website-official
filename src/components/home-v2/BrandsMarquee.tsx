@@ -1,6 +1,9 @@
 import { homeV2 } from "@/content/home-v2";
 
-function Card({ name, live, compact }: { name: string; live: boolean; compact: boolean }) {
+type Brand = (typeof homeV2.brands)[number];
+
+function Card({ brand, compact }: { brand: Brand; compact: boolean }) {
+  const { name, live, logo, w, h, scale = 1 } = brand;
   return (
     <li
       className={`relative grid shrink-0 place-items-center rounded-2xl ${compact ? "h-28 w-52" : "h-[clamp(7rem,15vh,9.5rem)] w-[clamp(13rem,18vw,17.5rem)]"} ${
@@ -13,9 +16,26 @@ function Card({ name, live, compact }: { name: string; live: boolean; compact: b
           Live
         </span>
       )}
-      <span className={`px-4 text-center font-medium tracking-[-0.02em] ${compact ? "text-[1.3rem]" : "text-[clamp(1.25rem,0.9rem+0.9vw,1.75rem)]"} ${live ? "text-ink" : "text-ink/45"}`}>
-        {name}
-      </span>
+      {logo ? (
+        // Plain <img>: the files are already sized and compressed WebP (scripts in the PR); all copies share one request.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={logo}
+          alt=""
+          width={w}
+          height={h}
+          decoding="async"
+          draggable={false}
+          className={`w-auto max-w-[72%] object-contain ${live ? "mt-4" : ""}`}
+          style={{ height: `${40 * scale}%` }}
+        />
+      ) : (
+        <span
+          className={`px-4 text-center font-semibold tracking-[-0.03em] ${compact ? "text-[1.3rem]" : "text-[clamp(1.25rem,0.9rem+0.9vw,1.75rem)]"} ${live ? "mt-4 text-ink" : "text-ink/70"}`}
+        >
+          {name}
+        </span>
+      )}
     </li>
   );
 }
@@ -30,15 +50,21 @@ export function BrandsMarquee({ compact = false }: { compact?: boolean }) {
   return (
     <div className="group relative overflow-hidden py-2">
       {/* Edge fades as plain overlays: a CSS mask over a moving track is re-composited every frame. */}
-      <div aria-hidden className={`pointer-events-none absolute inset-y-0 left-0 z-10 w-[6%] bg-gradient-to-r ${fade} to-transparent`} />
-      <div aria-hidden className={`pointer-events-none absolute inset-y-0 right-0 z-10 w-[6%] bg-gradient-to-l ${fade} to-transparent`} />
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-y-0 left-0 z-10 w-[6%] bg-gradient-to-r ${fade} to-transparent`}
+      />
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-y-0 right-0 z-10 w-[6%] bg-gradient-to-l ${fade} to-transparent`}
+      />
       <ul
         aria-hidden
         className="flex w-max gap-4 motion-safe:animate-[brands-loop_linear_infinite] group-hover:[animation-play-state:paused]"
         style={{ animationDuration: compact ? "26s" : "38s" }}
       >
         {[...set, ...set].map((b, i) => (
-          <Card key={i} name={b.name} live={b.live} compact={compact} />
+          <Card key={i} brand={b} compact={compact} />
         ))}
       </ul>
       {/* Screen readers get the list once. */}
