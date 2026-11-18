@@ -21,6 +21,7 @@ export const homeV2 = {
     { name: "Padcare", tile: "/images/brands/padcare.webp" },
     { name: "Kerala Ayurveda", tile: "/images/brands/kerala-ayurveda.webp" },
     { name: "Prestige", tile: "/images/brands/prestige.webp" },
+    { name: "Pathkind Labs", tile: "/images/brands/pathkind-labs.webp" },
   ] as { name: string; tile: string }[],
 };
 

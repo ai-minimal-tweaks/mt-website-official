@@ -44,7 +44,7 @@ export function BrandsMarquee({ compact = false }: { compact?: boolean }) {
       <ul
         aria-hidden
         className="flex w-max gap-4 motion-safe:animate-[brands-loop_linear_infinite] group-hover:[animation-play-state:paused]"
-        style={{ animationDuration: compact ? "40s" : "55s" }}
+        style={{ animationDuration: compact ? "44s" : "60s" }}
       >
         {[...set, ...set].map((b, i) => (
           <Tile key={i} name={b.name} tile={b.tile} compact={compact} />
