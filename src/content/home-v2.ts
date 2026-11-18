@@ -7,17 +7,18 @@ export const homeV2 = {
   ctas: { deck: "Request our deck", project: "Start a project" },
   brandsLabel: "Brands we’ve tweaked",
   /**
-   * Carousel order. `live`: an account we're running right now (green "Live" tag).
-   * `logo`: /public/images/brands/*.webp (trimmed, 400x140 box, WebP); without one the name is shown as text.
-   * `scale`: optical size tweak so tall marks and solid blocks sit as large as wide wordmarks.
+   * Carousel order. `live`: an account we're running right now (green "Live" tag; others are shown greyed out).
+   * `logo`: /public/images/brands/*.webp (trimmed, fitted to a 400x140 box, WebP) with its pixel size.
+   * Logos are sized to the same visual area automatically; `scale` only corrects for ink density
+   * (e.g. XYXX is a solid black block, so it reads larger than its outline suggests).
    */
   brands: [
-    { name: "MakeMyTrip", live: true, logo: "/images/brands/makemytrip.webp", w: 400, h: 127, scale: 1.06 },
+    { name: "MakeMyTrip", live: true, logo: "/images/brands/makemytrip.webp", w: 400, h: 127 },
     { name: "Kerala Ayurveda", live: false, logo: "/images/brands/kerala-ayurveda.webp", w: 400, h: 117 },
-    { name: "IndiaMART", live: true, logo: "/images/brands/indiamart.webp", w: 218, h: 140, scale: 1.3 },
-    { name: "upGrad", live: false, logo: "/images/brands/upgrad.webp", w: 400, h: 103, scale: 0.92 },
-    { name: "XYXX", live: true, logo: "/images/brands/xyxx.webp", w: 389, h: 140, scale: 0.9 },
-    { name: "OZi", live: false },
+    { name: "IndiaMART", live: true, logo: "/images/brands/indiamart.webp", w: 218, h: 140 },
+    { name: "upGrad", live: false, logo: "/images/brands/upgrad.webp", w: 400, h: 103, scale: 0.95 },
+    { name: "XYXX", live: true, logo: "/images/brands/xyxx.webp", w: 389, h: 140, scale: 0.86 },
+    { name: "OZi", live: false, logo: "/images/brands/ozi.webp", w: 294, h: 140, scale: 0.9 },
   ] as { name: string; live: boolean; logo?: string; w?: number; h?: number; scale?: number }[],
 };
 
