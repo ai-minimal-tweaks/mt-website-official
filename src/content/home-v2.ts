@@ -7,19 +7,21 @@ export const homeV2 = {
   ctas: { deck: "Request our deck", project: "Start a project" },
   brandsLabel: "Brands we’ve tweaked",
   /**
-   * Carousel order. `live`: an account we're running right now (green "Live" tag; others are shown greyed out).
+   * Carousel order. Every brand shows in full colour on the same card.
    * `logo`: /public/images/brands/*.webp (trimmed, fitted to a 400x140 box, WebP) with its pixel size.
    * Logos are sized to the same visual area automatically; `scale` only corrects for ink density
-   * (e.g. XYXX is a solid black block, so it reads larger than its outline suggests).
+   * (solid blocks like XYXX and Prestige read larger than their outline suggests).
    */
   brands: [
-    { name: "MakeMyTrip", live: true, logo: "/images/brands/makemytrip.webp", w: 400, h: 127 },
-    { name: "Kerala Ayurveda", live: false, logo: "/images/brands/kerala-ayurveda.webp", w: 400, h: 117 },
-    { name: "IndiaMART", live: true, logo: "/images/brands/indiamart.webp", w: 218, h: 140 },
-    { name: "upGrad", live: false, logo: "/images/brands/upgrad.webp", w: 400, h: 103, scale: 0.95 },
-    { name: "XYXX", live: true, logo: "/images/brands/xyxx.webp", w: 389, h: 140, scale: 0.86 },
-    { name: "OZi", live: false, logo: "/images/brands/ozi.webp", w: 294, h: 140, scale: 0.9 },
-  ] as { name: string; live: boolean; logo?: string; w?: number; h?: number; scale?: number }[],
+    { name: "MakeMyTrip", logo: "/images/brands/makemytrip.webp", w: 400, h: 127 },
+    { name: "Kerala Ayurveda", logo: "/images/brands/kerala-ayurveda.webp", w: 400, h: 117 },
+    { name: "IndiaMART", logo: "/images/brands/indiamart.webp", w: 218, h: 140 },
+    { name: "Prestige", logo: "/images/brands/prestige.webp", w: 290, h: 140, scale: 0.95 },
+    { name: "upGrad", logo: "/images/brands/upgrad.webp", w: 400, h: 103, scale: 0.95 },
+    { name: "goibibo", logo: "/images/brands/goibibo.webp", w: 400, h: 122, scale: 0.95 },
+    { name: "XYXX", logo: "/images/brands/xyxx.webp", w: 389, h: 140, scale: 0.86 },
+    { name: "OZi", logo: "/images/brands/ozi.webp", w: 294, h: 140, scale: 0.9 },
+  ] as { name: string; logo?: string; w?: number; h?: number; scale?: number }[],
 };
 
 export const forms = {

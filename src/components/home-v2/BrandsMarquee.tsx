@@ -13,19 +13,13 @@ const logoHeight = (w: number, h: number, scale = 1) => BASE_HEIGHT * Math.sqrt(
 type Brand = (typeof homeV2.brands)[number];
 
 function Card({ brand, compact }: { brand: Brand; compact: boolean }) {
-  const { name, live, logo, w, h, scale = 1 } = brand;
+  const { name, logo, w, h, scale = 1 } = brand;
   return (
     <li
-      className={`relative grid shrink-0 place-items-center rounded-2xl ${compact ? "h-28 w-52" : "h-[clamp(7rem,15vh,9.5rem)] w-[clamp(13rem,18vw,17.5rem)]"} ${
-        live ? "border-2 border-[#3fb262] bg-white" : "bg-[#efefee]"
+      className={`relative grid shrink-0 place-items-center rounded-2xl border border-[#e8e6e3] bg-white ${
+        compact ? "h-28 w-52" : "h-[clamp(7rem,15vh,9.5rem)] w-[clamp(13rem,18vw,17.5rem)]"
       }`}
     >
-      {live && (
-        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-[#e8f7ec] px-2 py-1 text-[0.72rem] font-medium text-[#2f9e52]">
-          <span className="size-1.5 rounded-full bg-[#2f9e52]" />
-          Live
-        </span>
-      )}
       {logo ? (
         // Plain <img>: the files are already sized and compressed WebP (scripts in the PR); all copies share one request.
         // eslint-disable-next-line @next/next/no-img-element
@@ -36,14 +30,13 @@ function Card({ brand, compact }: { brand: Brand; compact: boolean }) {
           height={h}
           decoding="async"
           draggable={false}
-          // Centred in the card on both axes (the Live tag sits in the corner, clear of every logo).
-          // Not live: greyed out, like the card behind it.
-          className={`w-auto max-w-[64%] object-contain ${live ? "" : "opacity-55 grayscale"}`}
+          // Centred in the card on both axes, always in full colour.
+          className="w-auto max-w-[64%] object-contain"
           style={{ height: `${logoHeight(w ?? 3, h ?? 1, scale)}%` }}
         />
       ) : (
         <span
-          className={`px-4 text-center font-semibold tracking-[-0.03em] ${compact ? "text-[1.3rem]" : "text-[clamp(1.25rem,0.9rem+0.9vw,1.75rem)]"} ${live ? "text-ink" : "text-ink/40"}`}
+          className={`px-4 text-center font-semibold tracking-[-0.03em] ${compact ? "text-[1.3rem]" : "text-[clamp(1.25rem,0.9rem+0.9vw,1.75rem)]"} text-ink`}
         >
           {name}
         </span>
@@ -73,7 +66,7 @@ export function BrandsMarquee({ compact = false }: { compact?: boolean }) {
       <ul
         aria-hidden
         className="flex w-max gap-4 motion-safe:animate-[brands-loop_linear_infinite] group-hover:[animation-play-state:paused]"
-        style={{ animationDuration: compact ? "26s" : "38s" }}
+        style={{ animationDuration: compact ? "35s" : "50s" }}
       >
         {[...set, ...set].map((b, i) => (
           <Card key={i} brand={b} compact={compact} />
