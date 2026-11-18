@@ -23,7 +23,52 @@ export const emailDomain = (email: string) => email.trim().toLowerCase().split("
 export function workEmailProblem(email: string): string | null {
   const domain = emailDomain(email);
   if (!email.includes("@") || !blockedEmailDomains.includes(domain)) return null;
-  return `Please use your work email. We can’t accept @${domain} addresses.`;
+  return "Please enter an official email address only";
+}
+
+/** Mandatory fields of each homepage form (checked in the browser and again by /api/contact). */
+export const requiredFields = {
+  project: ["name", "email", "services", "budget", "timeline"],
+  deck: ["name", "email", "company", "services"],
+} as const;
+
+export type EnquiryField = "name" | "email" | "company" | "services" | "budget" | "timeline" | "message";
+
+const MISSING: Record<EnquiryField, string> = {
+  name: "Please tell us your name.",
+  email: "Please enter your email address.",
+  company: "Please tell us your company name.",
+  services: "Please pick at least one service.",
+  budget: "Please pick a budget range.",
+  timeline: "Please pick a timeline.",
+  message: "Please add a message.",
+};
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/** Every problem with an enquiry, keyed by field (empty object = good to send). */
+export function enquiryErrors(
+  kind: "project" | "deck",
+  f: {
+    name?: string;
+    email?: string;
+    company?: string;
+    services?: string[];
+    budget?: string;
+    timeline?: string;
+    message?: string;
+  },
+): Partial<Record<EnquiryField, string>> {
+  const errors: Partial<Record<EnquiryField, string>> = {};
+  const filled = (k: EnquiryField) => {
+    const v = f[k];
+    return Array.isArray(v) ? v.length > 0 : !!v?.trim();
+  };
+  for (const k of requiredFields[kind]) if (!filled(k)) errors[k] = MISSING[k];
+  const email = f.email?.trim() ?? "";
+  if (email && !EMAIL_RE.test(email)) errors.email = "Please enter a valid email address.";
+  else if (email && workEmailProblem(email)) errors.email = workEmailProblem(email)!;
+  return errors;
 }
 
 /** The two homepage forms. "deck" asks for the credentials deck; "project" is a full project brief. */

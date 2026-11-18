@@ -205,11 +205,13 @@ function WaveText({ text }: { text: string }) {
   );
 }
 
-function MiniFooter({ dark = false }: { dark?: boolean }) {
+function MiniFooter({ dark = false, compact = false }: { dark?: boolean; compact?: boolean }) {
   return (
     <footer
-      data-rise="up"
-      className={`flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pb-1 text-[0.82rem] ${dark ? "" : "px-2"} ${dark ? "text-white/60" : "text-ink/50"}`}
+      data-rise={compact ? undefined : "up"}
+      className={`flex flex-wrap items-center gap-x-6 text-[0.82rem] ${
+        compact ? "flex-col-reverse items-start gap-y-3 border-t border-ink/10 pt-4" : "justify-between gap-y-2 px-2 pb-1"
+      } ${dark ? "text-white/60" : "text-ink/55"}`}
     >
       <span>© {new Date().getFullYear()} Minimal Tweaks</span>
       <span className="flex flex-wrap gap-x-5 gap-y-1">
@@ -368,6 +370,10 @@ function PhoneHome({ play, open }: { play: boolean; open: (k: EnquiryKind) => vo
         </h2>
         <div className="mt-8">
           <BrandsMarquee compact />
+        </div>
+        {/* Contact and social links, same as the desktop footer. */}
+        <div className="absolute inset-x-0 bottom-0 px-8 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <MiniFooter compact />
         </div>
       </section>
 

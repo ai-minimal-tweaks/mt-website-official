@@ -306,6 +306,12 @@ html.motion [data-hero-in] {
   opacity: 1;
   background: #d9381e;
 }
+/* Missing / invalid: the field itself turns faintly red too, not just its outline. */
+.field-alive[data-error] > :is(input, textarea) {
+  /* !important: beats the input's own bg/border utility classes */
+  background: #fff5f3 !important;
+  border-color: transparent !important;
+}
 
 /* Warm light that follows the pointer inside the enquiry pop-up. */
 .enquiry-glow {
