@@ -221,6 +221,9 @@ function MiniFooter({ dark = false, compact = false }: { dark?: boolean; compact
         <a className="transition hover:text-[#FE9004]" href={`tel:${site.phones[0].replace(/[^+\d]/g, "")}`}>
           {site.phones[0]}
         </a>
+        <a className="transition hover:text-[#FE9004]" href={homeV2.joinUs.href} target="_blank" rel="noopener noreferrer">
+          {homeV2.joinUs.label}
+        </a>
         {socials.map((s) => (
           <a key={s.key} className="transition hover:text-[#FE9004]" href={s.href} target="_blank" rel="noopener noreferrer">
             {s.label}

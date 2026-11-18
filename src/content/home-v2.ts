@@ -2,6 +2,8 @@
 
 export const homeV2 = {
   tagline: "Tweaking since 2022",
+  /** Footer link to the hiring form (ClickUp). */
+  joinUs: { label: "Become a Tweaker", href: "https://forms.clickup.com/9002063377/f/8c915gh-7176/LMQBVKW8D9ZPOHBYOR" },
   headline: { lead: "creative work needs", struck: "a lot of", accent: "minimal tweaks" },
   sub: "Ads, campaigns and content for brands that can’t afford average.",
   ctas: { deck: "Request our deck", project: "Start a project" },
