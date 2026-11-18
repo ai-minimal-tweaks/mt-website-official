@@ -1,46 +1,24 @@
 import { homeV2 } from "@/content/home-v2";
 
-/** Logo height (% of the card) for a logo with the reference aspect ratio (3:1, a typical wordmark). */
-const BASE_HEIGHT = 30;
-const REF_ASPECT = 3;
+// Tiles are 232x120 (the design's size). Shown at exactly that size on desktop so they stay pixel-sharp.
+const TILE_W = 232;
+const TILE_H = 120;
 
-/**
- * Equal visual area: a logo's perceived size follows its area, so height scales with 1/sqrt(aspect).
- * Wide wordmarks get shorter, compact marks taller, and they all read as the same size.
- */
-const logoHeight = (w: number, h: number, scale = 1) => BASE_HEIGHT * Math.sqrt(REF_ASPECT / (w / h)) * scale;
-
-type Brand = (typeof homeV2.brands)[number];
-
-function Card({ brand, compact }: { brand: Brand; compact: boolean }) {
-  const { name, logo, w, h, scale = 1 } = brand;
+function Tile({ name, tile, compact }: { name: string; tile: string; compact: boolean }) {
   return (
-    <li
-      className={`relative grid shrink-0 place-items-center rounded-2xl border border-[#e8e6e3] bg-white ${
-        compact ? "h-28 w-52" : "h-[clamp(7rem,15vh,9.5rem)] w-[clamp(13rem,18vw,17.5rem)]"
-      }`}
-    >
-      {logo ? (
-        // Plain <img>: the files are already sized and compressed WebP (scripts in the PR); all copies share one request.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={logo}
-          alt=""
-          width={w}
-          height={h}
-          decoding="async"
-          draggable={false}
-          // Centred in the card on both axes, always in full colour.
-          className="w-auto max-w-[64%] object-contain"
-          style={{ height: `${logoHeight(w ?? 3, h ?? 1, scale)}%` }}
-        />
-      ) : (
-        <span
-          className={`px-4 text-center font-semibold tracking-[-0.03em] ${compact ? "text-[1.3rem]" : "text-[clamp(1.25rem,0.9rem+0.9vw,1.75rem)]"} text-ink`}
-        >
-          {name}
-        </span>
-      )}
+    <li className="shrink-0">
+      {/* Plain <img>: already-compressed WebP at its final size; every copy in the loop shares one request. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={tile}
+        alt=""
+        title={name}
+        width={TILE_W}
+        height={TILE_H}
+        decoding="async"
+        draggable={false}
+        className={compact ? "h-[104px] w-auto" : "h-[120px] w-[232px]"}
+      />
     </li>
   );
 }
@@ -66,10 +44,10 @@ export function BrandsMarquee({ compact = false }: { compact?: boolean }) {
       <ul
         aria-hidden
         className="flex w-max gap-4 motion-safe:animate-[brands-loop_linear_infinite] group-hover:[animation-play-state:paused]"
-        style={{ animationDuration: compact ? "35s" : "50s" }}
+        style={{ animationDuration: compact ? "40s" : "55s" }}
       >
         {[...set, ...set].map((b, i) => (
-          <Card key={i} brand={b} compact={compact} />
+          <Tile key={i} name={b.name} tile={b.tile} compact={compact} />
         ))}
       </ul>
       {/* Screen readers get the list once. */}
