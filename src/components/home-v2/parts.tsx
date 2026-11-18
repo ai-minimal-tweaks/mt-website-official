@@ -54,12 +54,16 @@ export function TopBar({ tagline, play, compact = false }: { tagline: string; pl
         className="pointer-events-none absolute inset-y-0 left-0 w-64 bg-[radial-gradient(closest-side,rgba(255,179,71,.35),transparent)] transition-transform duration-300 ease-out [transform:translateX(calc(var(--bx,-20rem)-50%))]"
       />
       <a href="/" className="relative flex items-center text-[#1A1A1A]" aria-label="Minimal Tweaks home">
-        <LogoLockup className={compact ? "h-9 w-auto" : "h-[2.6rem] w-auto lg:h-[2.9rem]"} />
+        <LogoLockup className={compact ? "h-8 w-auto" : "h-[2.6rem] w-auto lg:h-[2.9rem]"} />
       </a>
       <ScrambleText
-        text={compact ? "Gurugram" : tagline}
+        text={tagline}
         play={play}
-        className={`relative font-medium uppercase text-ink/60 ${compact ? "text-[0.7rem] tracking-[0.18em]" : "hidden text-[1.15rem] tracking-[0.08em] sm:block"}`}
+        className={`relative whitespace-nowrap text-right font-medium uppercase text-ink/60 ${
+          compact
+            ? "text-[0.6rem] leading-tight tracking-[0.1em] max-[359px]:max-w-[5.5rem] max-[359px]:whitespace-normal"
+            : "hidden text-[1.15rem] tracking-[0.08em] sm:block"
+        }`}
       />
     </header>
   );

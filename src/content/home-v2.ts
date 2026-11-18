@@ -1,27 +1,27 @@
 // Copy for the temporary v2 homepage ("MT Homepage v2-temporary" design). See HOMEPAGE in src/lib/pages.ts.
 
 export const homeV2 = {
-  tagline: "Creative agency in Gurugram",
+  tagline: "Tweaking since 2022",
   headline: { lead: "creative work needs", struck: "a lot of", accent: "minimal tweaks" },
   sub: "Ads, campaigns and content for brands that can’t afford average.",
   ctas: { deck: "Request our deck", project: "Start a project" },
   brandsLabel: "Brands we’ve tweaked",
   /**
-   * Carousel order. Every brand shows in full colour on the same card.
-   * `logo`: /public/images/brands/*.webp (trimmed, fitted to a 400x140 box, WebP) with its pixel size.
-   * Logos are sized to the same visual area automatically; `scale` only corrects for ink density
-   * (solid blocks like XYXX and Prestige read larger than their outline suggests).
+   * Carousel order. Each brand is a ready-made tile (logo on a white card with the orange outline), exported from the
+   * design at 232x120 and saved as WebP in /public/images/brands. To add a brand, export its tile the same way.
    */
   brands: [
-    { name: "MakeMyTrip", logo: "/images/brands/makemytrip.webp", w: 400, h: 127 },
-    { name: "Kerala Ayurveda", logo: "/images/brands/kerala-ayurveda.webp", w: 400, h: 117 },
-    { name: "IndiaMART", logo: "/images/brands/indiamart.webp", w: 218, h: 140 },
-    { name: "Prestige", logo: "/images/brands/prestige.webp", w: 290, h: 140, scale: 0.95 },
-    { name: "upGrad", logo: "/images/brands/upgrad.webp", w: 400, h: 103, scale: 0.95 },
-    { name: "goibibo", logo: "/images/brands/goibibo.webp", w: 400, h: 122, scale: 0.95 },
-    { name: "XYXX", logo: "/images/brands/xyxx.webp", w: 389, h: 140, scale: 0.86 },
-    { name: "OZi", logo: "/images/brands/ozi.webp", w: 294, h: 140, scale: 0.9 },
-  ] as { name: string; logo?: string; w?: number; h?: number; scale?: number }[],
+    { name: "upGrad", tile: "/images/brands/upgrad.webp" },
+    { name: "CREX", tile: "/images/brands/crex.webp" },
+    { name: "Haptik", tile: "/images/brands/haptik.webp" },
+    { name: "goibibo", tile: "/images/brands/goibibo.webp" },
+    { name: "IndiaMART", tile: "/images/brands/indiamart.webp" },
+    { name: "XYXX", tile: "/images/brands/xyxx.webp" },
+    { name: "Reactore", tile: "/images/brands/reactore.webp" },
+    { name: "Padcare", tile: "/images/brands/padcare.webp" },
+    { name: "Kerala Ayurveda", tile: "/images/brands/kerala-ayurveda.webp" },
+    { name: "Prestige", tile: "/images/brands/prestige.webp" },
+  ] as { name: string; tile: string }[],
 };
 
 export const forms = {
